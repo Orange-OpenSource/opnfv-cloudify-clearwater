@@ -7,7 +7,7 @@ Clearwater is IMS in the Cloud. [See](http://www.projectclearwater.org/about-cle
 The Clearwater architecture is designed for deployment on cloud environments. It sourced on the best practice  IT software architecture (Load-balancing state-less, easy clustering etc..). [See](http://www.projectclearwater.org/technical/clearwater-architecture/) more about the software architecture of Clearwater !
 
 
-![Clearwater software architecture](clearwater-architecture.png =350x)
+![Clearwater software architecture](clearwater-architecture.png)
 
 ## Deployment
 
@@ -27,7 +27,7 @@ git clone -b stable https://github.com/Orange-OpenSource/opnfv-cloudify-clearwat
 ```
 Upload **blueprint** on the orchestrator :
 ```
-cd cloudify-clearwater-v2
+cd opnfv-cloudify-clearwater
 cfy blueprints upload -b clearwater -p openstack-blueprint.yaml
 ```
 
