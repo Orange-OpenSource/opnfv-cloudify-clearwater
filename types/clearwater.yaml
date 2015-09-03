@@ -1,0 +1,140 @@
+#######################################################################
+# 
+#   Copyright (c) 2015 Orange
+#   valentin.boucher@orange.com
+#
+# All rights reserved. This program and the accompanying materials
+# are made available under the terms of the Apache License, Version 2.0
+# which accompanies this distribution, and is available at
+# http://www.apache.org/licenses/LICENSE-2.0
+########################################################################
+
+node_types:
+  # Global type for clearwater nodes (create local_config file)
+  clearwater.nodes.config:
+    derived_from: cloudify.nodes.SoftwareComponent
+    properties:
+      private_domain:
+        description: Private domain for clearwater internal load-balancing
+        type: string
+    interfaces:
+      cloudify.interfaces.lifecycle:
+        create:
+          implementation: scripts/clearwater/other/clearwater.py
+          inputs:
+            invocation:
+              default:
+                function: configure
+
+  # Specific types for clearwater nodes (install role etc.)
+  clearwater.nodes.sprout:
+    derived_from: clearwater.nodes.config
+    interfaces:
+      cloudify.interfaces.lifecycle:
+        configure: scripts/clearwater/sprout/install-sprout.sh
+        stop: scripts/clearwater/sprout/stop-sprout.sh
+        delete: scripts/clearwater/other/remove-cluster-node.sh
+
+  clearwater.nodes.bono:
+    derived_from: clearwater.nodes.config
+    interfaces:
+      cloudify.interfaces.lifecycle:
+        configure: scripts/clearwater/bono/install-bono.sh
+        stop: scripts/clearwater/bono/stop-bono.sh
+        delete: scripts/clearwater/other/remove-cluster-node.sh
+
+  clearwater.nodes.homestead:
+    derived_from: clearwater.nodes.config
+    interfaces:
+      cloudify.interfaces.lifecycle:
+        configure: scripts/clearwater/homestead/install-homestead.sh
+        stop: scripts/clearwater/homestead/stop-homestead.sh
+        delete: scripts/clearwater/other/remove-cluster-node.sh
+
+  clearwater.nodes.homer:
+    derived_from: clearwater.nodes.config
+    interfaces:
+      cloudify.interfaces.lifecycle:
+        configure: scripts/clearwater/homer/install-homer.sh
+        stop: scripts/clearwater/homer/stop-homer.sh
+        delete: scripts/clearwater/other/remove-cluster-node.sh
+
+  clearwater.nodes.ralf:
+    derived_from: clearwater.nodes.config
+    interfaces:
+      cloudify.interfaces.lifecycle:
+        configure: scripts/clearwater/ralf/install-ralf.sh
+        stop: scripts/clearwater/ralf/stop-ralf.sh
+        delete: scripts/clearwater/other/remove-cluster-node.sh
+
+  clearwater.nodes.ellis:
+    derived_from: clearwater.nodes.config
+    interfaces:
+      cloudify.interfaces.lifecycle:
+        configure: scripts/clearwater/ellis/install-ellis.sh
+        stop: scripts/clearwater/ellis/stop-ellis.sh
+        delete: scripts/clearwater/other/remove-cluster-node.sh
+
+
+relationships:
+  # Specific relationships types for monitor bono, sprout and homestead nodes
+  monitors_sprout_nodes:
+    derived_from: cloudify.relationships.monitors
+    target_interfaces:
+      cloudify.interfaces.relationship_lifecycle:
+        preconfigure:
+          implementation: scripts/monitoring/proxy_snmp/append_proxy_snmp_conf.py
+          executor: central_deployment_agent
+          inputs:
+            port:
+              default: 161
+              description: snmp port
+            community:
+              default: clearwater
+              description: snmp community
+            oids:
+              description: snmp oids to poll
+              default:
+                1.2.826.0.1.1578918.9.3.1.1.2: sprout.Latency.Average
+                1.2.826.0.1.1578918.9.3.2.1.1.3.1: sprout.Homer.Connection.Count
+                1.2.826.0.1.1578918.9.3.3.1.1.3.1: sprout.Homestead.Connection.Count
+                1.2.826.0.1.1578918.9.3.6.1.2.1: sprout.Incoming.Requests.Count
+                1.2.826.0.1.1578918.9.3.7.1.2.1: sprout.Rejected.Overload.Count
+                1.2.826.0.1.1578918.9.3.8.1.2: sprout.Queue.Size.Average
+                1.2.826.0.1.1578918.9.3.9.1.2.1: sprout.Initial.Registration.Attempts
+                1.2.826.0.1.1578918.9.3.9.1.3.1: sprout.Initial.Registration.Successes
+                1.2.826.0.1.1578918.9.3.9.1.4.1: sprout.Initial.Registration.Failures
+                1.2.826.0.1.1578918.9.3.10.1.2.1: sprout.Re.Registration.Attempts
+                1.2.826.0.1.1578918.9.3.10.1.3.1: sprout.Re.Registration.Successes
+                1.2.826.0.1.1578918.9.3.10.1.4.1: sprout.Re.Registration.Failures
+                1.2.826.0.1.1578918.9.3.11.1.2.1: sprout.De.Registration.Attempts
+                1.2.826.0.1.1578918.9.3.11.1.3.1: sprout.De.Registration.Successes
+                1.2.826.0.1.1578918.9.3.11.1.4.1: sprout.De.Registration.Failures
+  monitors_bono_nodes:
+    derived_from: cloudify.relationships.monitors
+    target_interfaces:
+      cloudify.interfaces.relationship_lifecycle:
+        preconfigure:
+          implementation: scripts/monitoring/proxy_snmp/append_proxy_snmp_conf.py
+          executor: central_deployment_agent
+          inputs:
+            port:
+              default: 161
+              description: snmp port
+            community:
+              default: clearwater
+              description: snmp community
+            oids:
+              description: snmp oids to poll
+              default:
+                1.2.826.0.1.1578918.9.2.1: bono.Connected.Clients
+                1.2.826.0.1.1578918.9.2.2.1.2.1: bono.Latency.Average
+                1.2.826.0.1.1578918.9.2.3.1.1.3.1: bono.Sprout.Connection.Count
+                1.2.826.0.1.1578918.9.2.4.1.2.1: bono.Incoming.Requests.Count
+                1.2.826.0.1.1578918.9.2.5.1.2.1: bono.Rejected.Overload.Count
+                1.2.826.0.1.1578918.9.2.6.1.2.1: bono.Queue.Size.Average
+
+
+
+
+

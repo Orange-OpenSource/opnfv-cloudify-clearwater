@@ -1,0 +1,28 @@
+node_types:
+
+  SNMPProxy:
+    derived_from: cloudify.nodes.Root
+    interfaces:
+      cloudify.interfaces.lifecycle:
+        create: scripts/monitoring/proxy_snmp/install_requirements.sh
+
+
+relationships:
+  cloudify.relationships.monitors:
+    derived_from: cloudify.relationships.connected_to
+    target_interfaces:
+      cloudify.interfaces.relationship_lifecycle:
+        preconfigure:
+          implementation: scripts/monitoring/proxy_snmp/append_proxy_snmp_conf.py
+          executor: central_deployment_agent
+          inputs:
+            port:
+              default: 161
+              description: snmp port
+            community:
+              default: public
+              description: the community
+            oids:
+              description: the oids to poll
+        establish:
+          implementation: scripts/monitoring/proxy_snmp/add-snmpproxy-collector.py

@@ -1,0 +1,3 @@
+{% for bind_ip in binds %}
+nameserver	{{bind_ip}}
+{% endfor %}

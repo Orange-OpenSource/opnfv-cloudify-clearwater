@@ -1,0 +1,75 @@
+#######################################################################
+# 
+#   Copyright (c) 2015 Orange
+#   valentin.boucher@orange.com
+#
+# All rights reserved. This program and the accompanying materials
+# are made available under the terms of the Apache License, Version 2.0
+# which accompanies this distribution, and is available at
+# http://www.apache.org/licenses/LICENSE-2.0
+########################################################################
+
+node_types:
+
+  # Specific type for bind node
+  #   - install bind
+  #   - create dns domains
+  #   - create shared_config file
+  #   - install and configure etcd cluster
+
+  clearwater.infra.bind:
+    derived_from: cloudify.nodes.SoftwareComponent
+    properties:
+      public_domain:
+        description: Sip domain for sip users and bono load-balancing
+        type: string
+      private_domain:
+        description: Private domain for clearwater internal load-balancing
+        type: string
+      secret_code:
+        description: Secret code
+        type: string
+      hss_hostname:
+        description: HSS ip if you use external HSS
+        type: string
+        default: ''
+      hss_port:
+        type: string
+        default: '3868'
+    interfaces:
+      cloudify.interfaces.lifecycle:
+        create:           
+          implementation: scripts/bind/bind.py
+          inputs:
+            invocation:
+              default:
+                function: install
+        configure: scripts/clearwater/other/install-etcd.sh
+
+
+relationships:
+
+# Specific relationships types to add or remove clearwater node on DNS domains
+
+  app_connected_to_bind:
+    derived_from: cloudify.relationships.connected_to
+    target_interfaces:
+      cloudify.interfaces.relationship_lifecycle:
+        establish:
+          implementation: scripts/bind/bind.py
+          inputs:
+            invocation:
+              default:
+                function: add_backend
+        unlink:
+          implementation: scripts/bind/bind.py
+          inputs:
+            invocation:
+              default:
+                function: remove_backend
+
+  app_connected_to_bind_ellis:
+    derived_from: app_connected_to_bind
+    source_interfaces:
+      cloudify.interfaces.relationship_lifecycle:
+        establish: scripts/clearwater/ellis/create_number.sh

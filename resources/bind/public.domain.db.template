@@ -1,0 +1,50 @@
+$TTL 5m ; Default TTL
+
+; SOA, NS and A record for DNS server itself
+@                 3600 IN SOA  ns admin ( 2014010800 ; Serial
+                                          3600       ; Refresh
+                                          3600       ; Retry
+                                          3600       ; Expire
+                                          300 )      ; Minimum TTL
+@                 3600 IN NS   ns
+ns                3600 IN A    {{public_ip}} ; IPv4 address of BIND server
+
+; bono
+; ====
+;
+; Per-node records - not required to have both IPv4 and IPv6 records
+{% if backends.bono is defined %}
+{% for id, backend in backends.bono.iteritems() %}
+{{backend.name}}		 	IN A  		{{ backend.public_address }}
+{% endfor %}
+{% endif %}
+;
+; Cluster A and AAAA records - UEs that don't support RFC 3263 will simply
+; resolve the A or AAAA records and pick randomly from this set of addresses.
+{% if backends.bono is defined %}
+{% for id, backend in backends.bono.iteritems() %}
+@ 	 	IN A  		{{ backend.public_address }}
+{% endfor %}
+{% endif %}
+;
+; NAPTR and SRV records - these indicate a preference for TCP and then resolve
+; to port 5060 on the per-node records defined above.
+@                      IN NAPTR 1 1 "S" "SIP+D2T" "" _sip._tcp
+@                      IN NAPTR 2 1 "S" "SIP+D2U" "" _sip._udp
+{% if backends.bono is defined %}
+{% for id, backend in backends.bono.iteritems() %}
+_sip._tcp              IN SRV   0 0 5060 {{backend.name}}	
+_sip._udp              IN SRV   0 0 5060 {{backend.name}}	
+{% endfor %}
+{% endif %}
+; ellis
+; =====
+;
+; ellis is not clustered, so there's only ever one node.
+;
+; Per-node record - not required to have both IPv4 and IPv6 records
+{% if backends.ellis is defined %}
+{% for id, backend in backends.ellis.iteritems() %}
+ellis	 	IN A  		{{ backend.public_address }}
+{% endfor %}
+{% endif %}
