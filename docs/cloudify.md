@@ -116,6 +116,9 @@ Launch the deployment of cloudify manager server :
 ```
  cfy bootstrap --install-plugins -p openstack-manager-blueprint.yaml -i inputs.yaml
 ```
+If you have this error : **Requirement.parse('pbr>=1.6,<2.0'))**. Run the command a second time
+
+
 During the deployment many **logs** appears on console :
 ```
 2015-08-31 14:57:15 CFY <manager> [agents_security_group_d4d74.create] Task succeeded 'neutron_plugin.security_group.create'
