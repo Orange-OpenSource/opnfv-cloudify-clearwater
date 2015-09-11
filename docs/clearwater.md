@@ -111,7 +111,7 @@ This parameters will create one sprout VM and add it on sprout cluster.
 
 Then launch **scale** with this command :
 ```
-cfy executions start -w scale -d clearwater-test -i scale.yaml
+cfy executions start -w scale -d clearwater-test -p scale.yaml
 ```
 
 
