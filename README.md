@@ -23,7 +23,7 @@ See Clearwater management part to deploy this vIMS !
 
 ## Architecture
 
-Coming soon
+![cloudify clearwater architecture](docs/cloudify-clearwater-architecture.jpg)
 
 ## Clearwater management
 
