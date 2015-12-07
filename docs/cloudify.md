@@ -33,7 +33,7 @@ cd cloudify
 ```
 Install cloudify CLI version 3.2 with the PIP command : 
 ```
-pip install cloudify==3.2
+pip install cloudify==3.2.1
 ```
 
 Test if the command cfy exists 
