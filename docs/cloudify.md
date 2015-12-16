@@ -33,7 +33,7 @@ cd cloudify
 ```
 Install cloudify CLI version 3.2 with the PIP command : 
 ```
-pip install cloudify==3.2
+pip install cloudify==3.3
 ```
 
 Test if the command cfy exists 
@@ -51,7 +51,7 @@ cfy: error: too few arguments
 
 ### Deploy cloudify management server :
 
-For more explanation, [see](http://getcloudify.org/guide/3.2/getting-started-bootstrapping.html) the cloudify bootstrap documentation !
+For more explanation, [see](http://getcloudify.org/guide/3./getting-started-bootstrapping.html) the cloudify bootstrap documentation !
 
 Log into the host where you installed the **Cloudify CLI** and enter in the virtual environment with source command.
 
@@ -61,9 +61,9 @@ mkdir -p cloudify-manager
 cd cloudify-manager
 ```
 
-Download manager blueprint version 3.2 :
+Download manager blueprint version 3.3 :
 ```
-git clone -b 3.2-build https://github.com/cloudify-cosmo/cloudify-manager-blueprints.git
+git clone -b 3.3-build https://github.com/cloudify-cosmo/cloudify-manager-blueprints.git
 ```
 
 Prepare deployment on OpenStack platform :

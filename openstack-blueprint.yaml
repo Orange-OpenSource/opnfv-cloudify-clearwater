@@ -13,12 +13,12 @@
 # This Blueprint deploy the clearwater IMS on an openstack environment
 ########################################################################
 
-tosca_definitions_version: cloudify_dsl_1_0
+tosca_definitions_version: cloudify_dsl_1_2
 
 imports:
-  - types/cloudify.yaml
-  - http://www.getcloudify.org/spec/openstack-plugin/1.2/plugin.yaml
-  - http://www.getcloudify.org/spec/diamond-plugin/1.2/plugin.yaml
+  - http://www.getcloudify.org/spec/cloudify/3.3/types.yaml
+  - http://www.getcloudify.org/spec/openstack-plugin/1.3/plugin.yaml
+  - http://www.getcloudify.org/spec/diamond-plugin/1.3/plugin.yaml
   - types/monitoring.yaml
   - types/clearwater.yaml
   - types/bind.yaml
