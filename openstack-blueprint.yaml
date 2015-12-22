@@ -146,17 +146,6 @@ node_templates:
       - target: homestead_security_group
         type: cloudify.openstack.server_connected_to_security_group
 
-  ralf_host:
-    type: clearwater.nodes.MonitoredServer
-    instances:
-      deploy: 1
-    relationships:
-      - target: base_security_group
-        type: cloudify.openstack.server_connected_to_security_group
-
-      - target: ralf_security_group
-        type: cloudify.openstack.server_connected_to_security_group
-
   homer_host:
     type: clearwater.nodes.MonitoredServer
     instances:
@@ -232,16 +221,6 @@ node_templates:
       - type: cloudify.relationships.contained_in
         target: ellis_host
       - type: app_connected_to_bind_ellis
-        target: bind
-
-  ralf:
-    type: clearwater.nodes.ralf
-    properties:
-      private_domain: clearwater.local
-    relationships:
-      - type: cloudify.relationships.contained_in
-        target: ralf_host
-      - type: app_connected_to_bind
         target: bind
 
   homestead:
@@ -350,20 +329,6 @@ node_templates:
         - remote_ip_prefix: 0.0.0.0/0
           port: 6666
 
-  ralf_security_group:
-    type: cloudify.openstack.nodes.SecurityGroup
-    properties: 
-      security_group:
-        name: clearwater-sg_ralf
-        description: memcached Chronos REST
-      rules:
-        - remote_ip_prefix: 0.0.0.0/0
-          port: 11211
-        - remote_ip_prefix: 0.0.0.0/0
-          port: 7253
-        - remote_ip_prefix: 0.0.0.0/0
-          port: 10888
-
   homestead_security_group:
     type: cloudify.openstack.nodes.SecurityGroup
     properties: 
@@ -439,25 +404,6 @@ node_templates:
       floatingip:
         floating_network_name: { get_input: external_network_name }
 
-
-  # Declare scaling policies for clearwater nodes
-groups:
-  clearwater_hosts:
-    members: [sprout_host]
-    policies:
-      mem_scale_policy:
-        type: cloudify.policies.types.threshold
-        properties:
-          service: sprout_incoming
-          threshold: 20
-        triggers:
-          scale_trigger:
-            type: cloudify.policies.triggers.execute_workflow
-            parameters:
-              workflow: scale
-              workflow_parameters:
-                node_id: sprout
-                delta: 1
 
 outputs:
   dns_ip:
