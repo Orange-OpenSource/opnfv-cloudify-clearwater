@@ -95,7 +95,7 @@ keystone_url: 'https://identity.fr1.cloudwatt.com/v2.0'
 region: 'fr1'											# OpenStack region : look openrc file
 manager_public_key_name: 'manager-kp'
 agent_public_key_name: 'agent-kp'
-image_id: 'ae3082cb-fac1-46b1-97aa-507aaa8f184f'		# OS image ID (CentOS 7)
+image_id: '9209c396-58bd-4305-9f1d-d9a636cc2da2'		# OS image ID (CentOS 7)
 flavor_id: '18'											# Flavor ID (~ 4 Go RAM)
 external_network_name: public 							# external network on Openstack
 
