@@ -10,7 +10,7 @@ sudo apt-get update
 ctx logger info "Installing homestead packages and other clearwater packages"
 sudo DEBIAN_FRONTEND=noninteractive  apt-get -o Dpkg::Options::=--force-confdef -o Dpkg::Options::=--force-confnew install clearwater-cassandra --yes --force-yes
 sudo sed -i '61,65d' /etc/monit/conf.d/clearwater-cassandra.monit 
-sudo DEBIAN_FRONTEND=noninteractive  apt-get -o Dpkg::Options::=--force-confdef -o Dpkg::Options::=--force-confnew install homestead homestead-prov --yes --force-yes
+sudo DEBIAN_FRONTEND=noninteractive  apt-get -o Dpkg::Options::=--force-confdef -o Dpkg::Options::=--force-confnew install homestead homestead-prov clearwater-prov-tools --yes --force-yes
 sudo DEBIAN_FRONTEND=noninteractive  apt-get install clearwater-management --yes --force-yes
 ctx logger info "The installation packages is done correctly"
 

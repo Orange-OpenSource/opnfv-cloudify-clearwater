@@ -69,7 +69,7 @@ git clone -b 3.3-build https://github.com/cloudify-cosmo/cloudify-manager-bluepr
 Prepare deployment on OpenStack platform :
 ```
 cfy init
-cd cloudify-manager-blueprints/openstack
+cd cloudify-manager-blueprints/
 ```
 Install required packages for deployment :
 ```
@@ -78,10 +78,9 @@ sudo pip install -r requirements.txt
 ```
 
 The configuration for the cloudify manager deployment is contained in a YAML file. 
-A template configuration file exist, you can copy and edit it with the desired values.
+A template configuration file exist, you can edit it with the desired values.
 ```
-cp inputs.yaml.template inputs.yaml
-vi inputs.yaml
+vi openstack-manager-blueprint-inputs.yaml
 ```
 
 Bellow an example of inputs.yaml file configurations for [CloudWatt](https://www.cloudwatt.com/en/) platform. CloudWatt is a public OpenStack cloud made in France. You can help with this example to generate your configuration file for your OpenStack platform.
@@ -94,30 +93,21 @@ keystone_password: 'your_openstack_password'
 keystone_tenant_name: 'your_openstack_tenant'
 keystone_url: 'https://identity.fr1.cloudwatt.com/v2.0'
 region: 'fr1'											# OpenStack region : look openrc file
-manager_public_key_name: manager-kp
-agent_public_key_name: agent-kp
-image_id: 'ae3082cb-fac1-46b1-97aa-507aaa8f184f'		# OS image ID (Ubuntu 14.04)
-flavor_id: '17'											# Flavor ID (~ 2 Go RAM)
+manager_public_key_name: 'manager-kp'
+agent_public_key_name: 'agent-kp'
+image_id: '9209c396-58bd-4305-9f1d-d9a636cc2da2'		# OS image ID (CentOS 7)
+flavor_id: '18'											# Flavor ID (~ 4 Go RAM)
 external_network_name: public 							# external network on Openstack
 
-use_existing_manager_keypair: false
-use_existing_agent_keypair: false
-manager_server_name: cloudify-management-server
-manager_server_user: cloud 								# By default is ubuntu for ubuntu image
-manager_private_key_path: ~/.ssh/cloudify-manager-kp.pem
-agent_private_key_path: ~/.ssh/cloudify-agent-kp.pem
-agents_user: cloud 										# By default is ubuntu for ubuntu image
-nova_url: ''
-neutron_url: ''
-resources_prefix: cloudify
+
+ssh_user: 'cloud' 										# SSH user used to connect to the manager
+agents_user: 'cloud' 									# SSH user used to connect to agent VM
 ```
 
 Launch the deployment of cloudify manager server : 
 ```
- cfy bootstrap --install-plugins -p openstack-manager-blueprint.yaml -i inputs.yaml
+ cfy bootstrap --install-plugins -p openstack-manager-blueprint.yaml -i openstack-manager-blueprint-inputs.yaml
 ```
-If you have this error : **Requirement.parse('pbr>=1.6,<2.0'))**. Run the command a second time
-
 
 During the deployment many **logs** appears on console :
 ```
