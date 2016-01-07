@@ -3,7 +3,7 @@
 ctx logger info "Stopping homestead node"
 
 sudo monit unmonitor -g homestead
-sudo unmonitor -g homestead-prov
+sudo monit unmonitor -g homestead-prov
 
 # sudo service homestead stop && sudo service homestead-prov stop
 

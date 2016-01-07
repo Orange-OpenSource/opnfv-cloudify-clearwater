@@ -2,5 +2,5 @@
 
 ctx logger info "Remove node in ETCD cluster"
 
-sudo service clearwater-etcd decommission
+sudo timeout 180 service clearwater-etcd decommission
 
