@@ -22,6 +22,7 @@ imports:
   - types/monitoring.yaml
   - types/clearwater.yaml
   - types/bind.yaml
+  - https://raw.githubusercontent.com/boucherv/cloudify-test-upgrade/master/plugin/plugin.yaml
 
 inputs:
 
