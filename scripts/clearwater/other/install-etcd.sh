@@ -12,6 +12,6 @@ sudo   DEBIAN_FRONTEND=noninteractive apt-get install clearwater-config-manager 
 ctx logger info "The software is installed"
 
 sudo /usr/share/clearwater/clearwater-config-manager/scripts/upload_shared_config
-sudo /usr/share/clearwater/clearwater-config-manager/scripts/apply_shared_config
+#sudo /usr/share/clearwater/clearwater-config-manager/scripts/apply_shared_config
 
 ctx logger info "Installation is done"
