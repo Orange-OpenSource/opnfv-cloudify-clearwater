@@ -21,8 +21,11 @@ enabled = true
 max_ttl = 600' | sudo tee --append /etc/chronos/chronos.conf
 
 ctx logger info "Configure the APT software source"
-echo 'deb http://repo.cw-ngv.com/stable binary/' | sudo tee --append /etc/apt/sources.list.d/clearwater.list
-curl -L http://repo.cw-ngv.com/repo_key | sudo apt-key add -
+if [ ! -f /etc/apt/sources.list.d/clearwater.list ]
+  then
+    echo 'deb http://repo.cw-ngv.com/stable binary/' | sudo tee --append /etc/apt/sources.list.d/clearwater.list
+    curl -L http://repo.cw-ngv.com/repo_key | sudo apt-key add -
+fi
 sudo apt-get update
 
 ctx logger info "Installing ralf packages and other clearwater packages"
