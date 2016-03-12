@@ -3,8 +3,11 @@
 ctx logger debug "${COMMAND}"
 
 ctx logger info "Configure the APT software source"
-echo 'deb http://repo.cw-ngv.com/stable binary/' | sudo tee --append /etc/apt/sources.list.d/clearwater.list
-curl -L http://repo.cw-ngv.com/repo_key | sudo apt-key add -
+if [ ! -f /etc/apt/sources.list.d/clearwater.list ]
+  then
+    echo 'deb http://repo.cw-ngv.com/stable binary/' | sudo tee --append /etc/apt/sources.list.d/clearwater.list
+    curl -L http://repo.cw-ngv.com/repo_key | sudo apt-key add -
+fi
 sudo apt-get update
 
 ctx logger info "Installing ellis packages and other clearwater packages"

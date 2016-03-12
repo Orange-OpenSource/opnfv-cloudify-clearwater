@@ -407,3 +407,5 @@ node_templates:
 outputs:
   dns_ip:
     value: { get_attribute: [bind_floatingip, floating_ip_address] }
+  ellis_ip:
+    value: { get_attribute: [ellis_floatingip, floating_ip_address] }
