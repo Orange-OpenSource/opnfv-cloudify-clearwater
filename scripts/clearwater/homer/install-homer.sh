@@ -8,10 +8,9 @@ curl -L http://repo.cw-ngv.com/repo_key | sudo apt-key add -
 sudo apt-get update
 
 ctx logger info "Installing homer packages and other clearwater packages"
-sudo DEBIAN_FRONTEND=noninteractive  apt-get -o Dpkg::Options::=--force-confdef -o Dpkg::Options::=--force-confnew install clearwater-cassandra --yes --force-yes
-sudo sed -i '61,65d' /etc/monit/conf.d/clearwater-cassandra.monit 
 sudo DEBIAN_FRONTEND=noninteractive  apt-get -o Dpkg::Options::=--force-confdef -o Dpkg::Options::=--force-confnew install homer --yes --force-yes
 sudo DEBIAN_FRONTEND=noninteractive  apt-get install clearwater-management --yes --force-yes
+sudo sed -i '47d' /etc/monit/conf.d/clearwater-cassandra.monit
 ctx logger info "The installation packages is done correctly"
 
 ctx logger info "Use the DNS server"
