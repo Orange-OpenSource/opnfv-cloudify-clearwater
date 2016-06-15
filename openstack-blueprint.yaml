@@ -335,6 +335,8 @@ node_templates:
           port: 5058
         - remote_ip_prefix: 0.0.0.0/0
           port: 5054
+        - remote_ip_prefix: 0.0.0.0/0
+          port: 5052
 
   sprout_security_group:
     type: cloudify.openstack.nodes.SecurityGroup
