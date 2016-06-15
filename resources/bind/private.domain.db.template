@@ -46,13 +46,43 @@ _sip._udp              IN SRV   0 0 5060 {{backend.name}}
 sprout		 	IN A  		{{ backend.private_address }}
 {% endfor %}
 {% endif %}
+
+{% if backends.sprout is defined %}
+{% for id, backend in backends.sprout.iteritems() %}
+scscf.sprout		 	IN A  		{{ backend.private_address }}
+{% endfor %}
+{% endif %}
 ;
 sprout                 IN NAPTR 1 1 "S" "SIP+D2T" "" _sip._tcp.sprout
+scscf.sprout                 IN NAPTR 1 1 "S" "SIP+D2T" "" _sip._tcp.scscf.sprout
 {% if backends.sprout is defined %}
 {% for id, backend in backends.sprout.iteritems() %}
 _sip._tcp.sprout       IN SRV   0 0 5054 {{backend.name}}
 {% endfor %}
 {% endif %}
+
+{% if backends.sprout is defined %}
+{% for id, backend in backends.sprout.iteritems() %}
+_sip._tcp.scscf.sprout       IN SRV   0 0 5054 {{backend.name}}
+{% endfor %}
+{% endif %}
+
+{% if backends.sprout is defined %}
+{% for id, backend in backends.sprout.iteritems() %}
+icscf.sprout		 	IN A  		{{ backend.private_address }}
+{% endfor %}
+{% endif %}
+;
+icscf.sprout                 IN NAPTR 1 1 "S" "SIP+D2T" "" _sip._tcp.icscf.sprout
+{% if backends.sprout is defined %}
+{% for id, backend in backends.sprout.iteritems() %}
+_sip._tcp.icscf.sprout       IN SRV   0 0 5054 {{backend.name}}
+{% endfor %}
+{% endif %}
+
+
+
+
 ;
 ; homestead
 ; =========
