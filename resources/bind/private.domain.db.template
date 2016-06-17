@@ -76,7 +76,7 @@ icscf.sprout		 	IN A  		{{ backend.private_address }}
 icscf.sprout                 IN NAPTR 1 1 "S" "SIP+D2T" "" _sip._tcp.icscf.sprout
 {% if backends.sprout is defined %}
 {% for id, backend in backends.sprout.iteritems() %}
-_sip._tcp.icscf.sprout       IN SRV   0 0 5054 {{backend.name}}
+_sip._tcp.icscf.sprout       IN SRV   0 0 5052 {{backend.name}}
 {% endfor %}
 {% endif %}
 
