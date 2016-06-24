@@ -13,13 +13,13 @@ ns                3600 IN A    {{host_ip}} ; IPv4 address of BIND server
 ; ====
 ;
 {% if backends.bono is defined -%}
-{% for id, backend in backends.bono.iteritems() -%}
+{% for id, backend in backends.bono.iteritems() %}
 {{backend.name}}		 	IN A  		{{ backend.private_address }}
 {%- endfor %}
 {%- endif %}
 ;
 {% if backends.bono is defined -%}
-{% for id, backend in backends.bono.iteritems() -%}
+{% for id, backend in backends.bono.iteritems() %}
 bono.{{local_site_name}}	 	IN A  		{{ backend.private_address }}
 {%- endfor %}
 {%- endif %}
@@ -27,7 +27,7 @@ bono.{{local_site_name}}	 	IN A  		{{ backend.private_address }}
 bono.{{local_site_name}}        IN NAPTR 1 1 "S" "SIP+D2T" "" _sip._tcp
 bono.{{local_site_name}}        IN NAPTR 2 1 "S" "SIP+D2U" "" _sip._udp
 {% if backends.bono is defined -%}
-{% for id, backend in backends.bono.iteritems() -%}
+{% for id, backend in backends.bono.iteritems() %}
 _sip._tcp              IN SRV   0 0 5060 {{backend.name}}	
 _sip._udp              IN SRV   0 0 5060 {{backend.name}}	
 {%- endfor %}
@@ -36,19 +36,19 @@ _sip._udp              IN SRV   0 0 5060 {{backend.name}}
 ; ======
 ;
 {% if backends.sprout is defined -%}
-{% for id, backend in backends.sprout.iteritems() -%}
+{% for id, backend in backends.sprout.iteritems() %}
 {{backend.name}}		 	IN A  		{{ backend.private_address }}
 {%- endfor %}
 {%- endif %}
 ;
 {% if backends.sprout is defined -%}
-{% for id, backend in backends.sprout.iteritems() -%}
+{% for id, backend in backends.sprout.iteritems() %}
 sprout.{{local_site_name}}	 	IN A  		{{ backend.private_address }}
 {%- endfor %}
 {%- endif %}
 
 {% if backends.sprout is defined -%}
-{% for id, backend in backends.sprout.iteritems() -%}
+{% for id, backend in backends.sprout.iteritems() %}
 scscf.sprout.{{local_site_name}}	 	IN A  		{{ backend.private_address }}
 {%- endfor %}
 {%- endif %}
@@ -56,26 +56,26 @@ scscf.sprout.{{local_site_name}}	 	IN A  		{{ backend.private_address }}
 sprout.{{local_site_name}}              IN NAPTR 1 1 "S" "SIP+D2T" "" _sip._tcp.sprout
 scscf.sprout.{{local_site_name}}        IN NAPTR 1 1 "S" "SIP+D2T" "" _sip._tcp.scscf.sprout
 {% if backends.sprout is defined -%}
-{% for id, backend in backends.sprout.iteritems() -%}
+{% for id, backend in backends.sprout.iteritems() %}
 _sip._tcp.sprout       IN SRV   0 0 5054 {{backend.name}}
 {%- endfor %}
 {%- endif %}
 
 {% if backends.sprout is defined -%}
-{% for id, backend in backends.sprout.iteritems() -%}
+{% for id, backend in backends.sprout.iteritems() %}
 _sip._tcp.scscf.sprout       IN SRV   0 0 5054 {{backend.name}}
 {%- endfor %}
 {%- endif %}
 
 {% if backends.sprout is defined -%}
-{% for id, backend in backends.sprout.iteritems() -%}
+{% for id, backend in backends.sprout.iteritems() %}
 icscf.sprout.{{local_site_name}}	IN A  		{{ backend.private_address }}
 {%- endfor %}
 {%- endif %}
 ;
 icscf.sprout.{{local_site_name}}                 IN NAPTR 1 1 "S" "SIP+D2T" "" _sip._tcp.icscf.sprout
 {% if backends.sprout is defined -%}
-{% for id, backend in backends.sprout.iteritems() -%}
+{% for id, backend in backends.sprout.iteritems() %}
 _sip._tcp.icscf.sprout       IN SRV   0 0 5052 {{backend.name}}
 {%- endfor %}
 {%- endif %}
@@ -88,13 +88,13 @@ _sip._tcp.icscf.sprout       IN SRV   0 0 5052 {{backend.name}}
 ; =========
 ;
 {% if backends.homestead is defined -%}
-{% for id, backend in backends.homestead.iteritems() -%}
+{% for id, backend in backends.homestead.iteritems() %}
 {{backend.name}}		 	IN A  		{{ backend.private_address }}
 {%- endfor %}
 {%- endif %}
 ;
 {% if backends.homestead is defined -%}
-{% for id, backend in backends.homestead.iteritems() -%}
+{% for id, backend in backends.homestead.iteritems() %}
 hs.{{local_site_name}}	 	IN A  		{{ backend.private_address }}
 {%- endfor %}
 {%- endif %}
@@ -103,13 +103,13 @@ hs.{{local_site_name}}	 	IN A  		{{ backend.private_address }}
 ; =====
 ;
 {% if backends.homer is defined -%}
-{% for id, backend in backends.homer.iteritems() -%}
+{% for id, backend in backends.homer.iteritems() %}
 {{backend.name}}		 	IN A  		{{ backend.private_address }}
 {%- endfor %}
 {%- endif %}
 ;
 {% if backends.homer is defined -%}
-{% for id, backend in backends.homer.iteritems() -%}
+{% for id, backend in backends.homer.iteritems() %}
 homer.{{local_site_name}}	 	IN A  		{{ backend.private_address }}
 {%- endfor %}
 {%- endif %}
@@ -117,13 +117,13 @@ homer.{{local_site_name}}	 	IN A  		{{ backend.private_address }}
 ; =====
 ;
 {% if backends.ralf is defined -%}
-{% for id, backend in backends.ralf.iteritems() -%}
+{% for id, backend in backends.ralf.iteritems() %}
 {{backend.name}}		 	IN A  		{{ backend.private_address }}
 {%- endfor %}
 {%- endif %}
 ;
 {% if backends.ralf is defined -%}
-{% for id, backend in backends.ralf.iteritems() -%}
+{% for id, backend in backends.ralf.iteritems() %}
 ralf.{{local_site_name}}	 	IN A  		{{ backend.private_address }}
 {%- endfor %}
 {%- endif %}
@@ -133,7 +133,7 @@ ralf.{{local_site_name}}	 	IN A  		{{ backend.private_address }}
 ; =====
 ;
 {% if backends.ellis is defined -%}
-{% for id, backend in backends.ellis.iteritems() -%}
+{% for id, backend in backends.ellis.iteritems() %}
 ellis	 	IN A  		{{ backend.private_address }}
 {%- endfor %}
 {%- endif %}
