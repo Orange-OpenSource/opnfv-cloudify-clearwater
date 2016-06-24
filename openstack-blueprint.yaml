@@ -116,7 +116,7 @@ node_templates:
   sprout_host:
     type: clearwater.nodes.MonitoredServer
     instances:
-      deploy: 2
+      deploy: 1
     relationships:
       - target: base_security_group
         type: cloudify.openstack.server_connected_to_security_group
