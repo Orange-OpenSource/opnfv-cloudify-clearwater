@@ -1,11 +1,11 @@
 # Deployment definitions
 home_domain={{public_domain}}
-sprout_hostname=sprout.{{private_domain}}
+sprout_hostname=sprout.{{local_site_name}}.{{private_domain}}
 chronos_hostname={{host_ip}}:7253
-hs_hostname=hs.{{private_domain}}:8888
-hs_provisioning_hostname=hs.{{private_domain}}:8889
-ralf_hostname=ralf.{{private_domain}}:10888
-xdms_hostname=homer.{{private_domain}}:7888
+hs_hostname=hs.{{local_site_name}}.{{private_domain}}:8888
+hs_provisioning_hostname=hs.{{local_site_name}}.{{private_domain}}:8889
+ralf_hostname=ralf.{{local_site_name}}.{{private_domain}}:10888
+xdms_hostname=homer.{{local_site_name}}.{{private_domain}}:7888
 signaling_dns_server={{host_ip}}
 
 {% if (hss_hostname is defined) and (hss_hostname != '') %}

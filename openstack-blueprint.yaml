@@ -1,6 +1,6 @@
 #######################################################################
 # 
-#   Copyright (c) 2015 Orange
+#   Copyright (c) 2016 Orange
 #   valentin.boucher@orange.com
 #
 # All rights reserved. This program and the accompanying materials
@@ -46,6 +46,14 @@ inputs:
     type: string
     description: Sip domain for sip users and bono load-balancing
 
+  local_site_name:
+    type: string
+    description: Name of local site for multisite configuration
+
+  remote_site_name:
+    type: string
+    description: Name of remote site for multisite configuration 
+
 node_types:
 
   # Global types for VMs
@@ -88,6 +96,19 @@ node_types:
                     config:
                       devices: x?vd[a-z]+[0-9]*$
                   NetworkCollector: {}
+
+  clearwater.nodes.config:
+    derived_from: clearwater.nodes.base.config
+    properties:
+      private_domain:
+        type: string
+        default: clearwater.local
+      local_site_name:
+        type: string
+        default: { get_input: local_site_name }
+      remote_site_name:
+        type: string
+        default: { get_input: remote_site_name }
 
 node_templates:
 
@@ -203,8 +224,6 @@ node_templates:
   # Declare clearwater and other software
   sprout:
     type: clearwater.nodes.sprout
-    properties:
-      private_domain: clearwater.local
     relationships:
       - type: cloudify.relationships.contained_in
         target: sprout_host
@@ -215,8 +234,6 @@ node_templates:
 
   bono:
     type: clearwater.nodes.bono
-    properties:
-      private_domain: clearwater.local
     relationships:
       - type: cloudify.relationships.contained_in
         target: bono_host
@@ -226,8 +243,6 @@ node_templates:
         target: proxy_node
   ellis:
     type: clearwater.nodes.ellis
-    properties:
-      private_domain: clearwater.local
     relationships:
       - type: cloudify.relationships.contained_in
         target: ellis_host
@@ -236,8 +251,6 @@ node_templates:
 
   ralf:
     type: clearwater.nodes.ralf
-    properties:
-      private_domain: clearwater.local
     relationships:
       - type: cloudify.relationships.contained_in
         target: ralf_host
@@ -246,8 +259,6 @@ node_templates:
 
   homestead:
     type: clearwater.nodes.homestead
-    properties:
-      private_domain: clearwater.local
     relationships:
       - type: cloudify.relationships.contained_in
         target: homestead_host
@@ -256,8 +267,6 @@ node_templates:
 
   homer:
     type: clearwater.nodes.homer
-    properties:
-      private_domain: clearwater.local
     relationships:
       - type: cloudify.relationships.contained_in
         target: homer_host
@@ -270,6 +279,7 @@ node_templates:
       private_domain: clearwater.local
       public_domain: { get_input: public_domain }
       secret_code: secret
+      local_site_name: { get_input: local_site_name }
     relationships:
       - type: cloudify.relationships.contained_in
         target: bind_host
