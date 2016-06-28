@@ -92,7 +92,7 @@ To **test** your deployment you can use the [clearwater-live-test](https://clear
  Basic Call - Unknown number (TCP) - (6505550405, 6505550862) Passed
 ```
 ### Using OPNFV/Functest container 
-It's already the same test but the installation of all dependancies was already done in this container. In addition, this test provide a json file of all test result.
+It's the same test but the installation of all dependancies was already done in this container. In addition, this test provide a json file of all test result.
 
 You can run Functest container in your cloudify cli VM. To do that, you must install docker into this VM :
 ```
