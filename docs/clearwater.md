@@ -109,6 +109,7 @@ docker run --dns=<BIND_PUBLIC_IP> -it opnfv/functest /bin/bash
 Next you can launch the signaling testing of your deployment :
 ```
 cd ~/repos/vims-test
+source /etc/profile.d/rvm.sh
 rake test[<YOUR_PUBLIC_DOMAIN_NAME>] SIGNUP_CODE=secret
 ```
 
