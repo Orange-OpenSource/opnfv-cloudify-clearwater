@@ -297,6 +297,9 @@ node_templates:
         - remote_ip_prefix: 0.0.0.0/0
           port: 161
           protocol: udp
+        -remote_ip_prefix: 0.0.0.0/0
+          port: 162
+          protocol: udp
 
   bono_security_group:
     type: cloudify.openstack.nodes.SecurityGroup
@@ -307,22 +310,28 @@ node_templates:
       rules:
         - remote_ip_prefix: 0.0.0.0/0
           port: 3478
+          protocol: tcp
         - remote_ip_prefix: 0.0.0.0/0
           port: 3478
           protocol: udp
         - remote_ip_prefix: 0.0.0.0/0
           port: 5060
+          protocol: tcp
         - remote_ip_prefix: 0.0.0.0/0
           port: 5060
           protocol: udp
         - remote_ip_prefix: 0.0.0.0/0
           port: 5062
+          protocol: tcp
         - remote_ip_prefix: 0.0.0.0/0
           port_range_min: 32768
           port_range_max: 65535
           protocol: udp
         - remote_ip_prefix: 0.0.0.0/0
           port: 6669
+        - remote_ip_prefix: 0.0.0.0/0
+          port: 5058
+          protocol: tcp
 
   internal_sip_security_group:
     type: cloudify.openstack.nodes.SecurityGroup
@@ -333,10 +342,13 @@ node_templates:
       rules:
         - remote_ip_prefix: 0.0.0.0/0
           port: 5058
+          protocol: tcp
         - remote_ip_prefix: 0.0.0.0/0
           port: 5054
+          protocol: tcp
         - remote_ip_prefix: 0.0.0.0/0
           port: 5052
+          protocol: tcp
 
   sprout_security_group:
     type: cloudify.openstack.nodes.SecurityGroup
@@ -347,10 +359,24 @@ node_templates:
       rules:
         - remote_ip_prefix: 0.0.0.0/0
           port: 11211
+          protocol: tcp
         - remote_ip_prefix: 0.0.0.0/0
           port: 7253
+          protocol: tcp
+        - remote_ip_prefix: 0.0.0.0/0
+          port: 7000
+          protocol: tcp
+        - remote_ip_prefix: 0.0.0.0/0
+          port: 9160
+          protocol: tcp
+        - remote_ip_prefix: 0.0.0.0/0
+          port: 9888
+          protocol: tcp
         - remote_ip_prefix: 0.0.0.0/0
           port: 6666
+        - remote_ip_prefix: 0.0.0.0/0
+          port: 443
+          protocol: tcp
 
   ralf_security_group:
     type: cloudify.openstack.nodes.SecurityGroup
@@ -361,10 +387,13 @@ node_templates:
       rules:
         - remote_ip_prefix: 0.0.0.0/0
           port: 11211
+          protocol: tcp
         - remote_ip_prefix: 0.0.0.0/0
           port: 7253
+          protocol: tcp
         - remote_ip_prefix: 0.0.0.0/0
           port: 10888
+          protocol: tcp
 
   homestead_security_group:
     type: cloudify.openstack.nodes.SecurityGroup
@@ -375,10 +404,13 @@ node_templates:
       rules:
         - remote_ip_prefix: 0.0.0.0/0
           port: 8888
+          protocol: tcp
         - remote_ip_prefix: 0.0.0.0/0
           port: 8889
+          protocol: tcp
         - remote_ip_prefix: 0.0.0.0/0
           port: 7000
+          protocol: tcp
         - remote_ip_prefix: 0.0.0.0/0
           port_range_min: 6667
           port_range_max: 6668
@@ -392,8 +424,10 @@ node_templates:
       rules:
         - remote_ip_prefix: 0.0.0.0/0
           port: 7888
+          protocol: tcp
         - remote_ip_prefix: 0.0.0.0/0
           port: 7000
+          protocol: tcp
         - remote_ip_prefix: 0.0.0.0/0
           port: 6665
 
@@ -406,8 +440,10 @@ node_templates:
       rules:
         - remote_ip_prefix: 0.0.0.0/0
           port: 80
+          protocol: tcp
         - remote_ip_prefix: 0.0.0.0/0
           port: 443
+          protocol: tcp
 
   bind_security_group:
     type: cloudify.openstack.nodes.SecurityGroup
@@ -421,6 +457,9 @@ node_templates:
           protocol: udp
         - remote_ip_prefix: 0.0.0.0/0
           port: 53
+
+
+
 
   # Declare floating IP for bono, bind and ellis nodes 
   bono_floatingip:
@@ -443,6 +482,7 @@ node_templates:
 
 
   # Declare scaling policies for clearwater nodes
+  
 groups:
   clearwater_hosts:
     members: [sprout_host]
@@ -450,8 +490,9 @@ groups:
       mem_scale_policy:
         type: cloudify.policies.types.threshold
         properties:
-          service: sprout_incoming
-          threshold: 20
+          service: cpu.total.user
+          stability_time: 60
+          threshold: 25
         triggers:
           scale_trigger:
             type: cloudify.policies.triggers.execute_workflow
