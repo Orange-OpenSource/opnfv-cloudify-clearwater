@@ -297,7 +297,7 @@ node_templates:
         - remote_ip_prefix: 0.0.0.0/0
           port: 161
           protocol: udp
-        -remote_ip_prefix: 0.0.0.0/0
+        - remote_ip_prefix: 0.0.0.0/0
           port: 162
           protocol: udp
 
