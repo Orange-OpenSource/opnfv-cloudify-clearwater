@@ -28,6 +28,7 @@ from cloudify import utils
 
 # config files destination
 CONFIG_PATH = '/etc/clearwater/local_config'
+CONFIG_PATH_ETCD = '/etc/clearwater/shared_config'
 CONFIG_PATH_NAMESERVER = '/etc/dnsmasq.resolv.conf'
 
 # Path of jinja template config files
@@ -54,18 +55,10 @@ def configure(subject=None):
                 if elements.type == 'cloudify.openstack.server_connected_to_floating_ip':
                     public_ip = elements.target.instance.runtime_properties['floating_ip_address']
 
-    # Get bind host IP
-    binds = []
-    for element in relationships:
-        text = element.target.instance.id
-        if re.split(r'_',text)[0] == 'bind':
-            binds.append(element.target.instance.host_ip)
-
     config = subject.node.properties.copy()
     config.update(dict(
         name=name.replace('_','-'),
         host_ip=subject.instance.host_ip,
-        etcd_ip=binds[0],
         public_ip=public_ip))
 
 
@@ -83,11 +76,26 @@ def configure(subject=None):
     _run('sudo chmod 644 {0}'.format(CONFIG_PATH),
          error_message='Failed to change permissions {0}.'.format(CONFIG_PATH))
 
+
+    # Generate shared_config file for clearwater-etcd software
+    role = re.split(r'_',name)[0]
+    if role=="ellis":
+        template = Template(ctx.get_resource(TEMPLATE_RESOURCE_NAME_ETCD))
+
+        ctx.logger.debug('Rendering the Jinja2 template to {0}.'.format(CONFIG_PATH_ETCD))
+        ctx.logger.debug('The config dict: {0}.'.format(config))
+
+        with tempfile.NamedTemporaryFile(delete=False) as temp_config:
+            temp_config.write(template.render(config))
+
+        _run('sudo mv {0} {1}'.format(temp_config.name, CONFIG_PATH_ETCD),
+             error_message='Failed to write to {0}.'.format(CONFIG_PATH_ETCD))
+        _run('sudo chmod 644 {0}'.format(CONFIG_PATH_ETCD),
+             error_message='Failed to change permissions {0}.'.format(CONFIG_PATH_ETCD))
+
     template = Template(ctx.get_resource(TEMPLATE_RESOURCE_NAME_NAMESERVER))
 
     config = subject.node.properties.copy()
-
-    config.update(dict(binds=binds))
 
     # Generate dnsmasq file from jinja template
     with tempfile.NamedTemporaryFile(delete=False) as temp_config:

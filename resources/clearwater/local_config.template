@@ -1,7 +1,7 @@
 local_ip={{host_ip}}
 public_ip={{public_ip}}
 public_hostname={{name}}.{{private_domain}}
-etcd_cluster={{etcd_ip}}{% if other_dns_ip is defined -%},{{other_dns_ip}}{%- endif %}
+etcd_cluster={{etcd_ip}}
 
 local_site_name={{local_site_name}}
 remote_site_name={{remote_site_name}}
