@@ -306,7 +306,7 @@ node_templates:
                 domain: { get_input: public_domain }
                 record_ip: { get_attribute: [ bono_floatingip, floating_ip_address ]}
                 other_records: 
-                  - SRV:
+                  SRV:
                     _sip._tcp: "0 0 5060"
                     _sip._udp: "0 0 5060"
       - type: monitors_bono_nodes
