@@ -16,7 +16,14 @@ f.close()
 for k in conf_yaml['node_templates'].keys():
   if k.startswith('ellis'):
     conf_yaml['node_templates'].pop(k)
+
+for k in conf_yaml['node_templates'].keys():
+  if k.endswith('security_group'):
+    conf_yaml['node_templates'][k]['properties']['use_external_resource'] = True
+    sg_name = conf_yaml['node_templates'][k]['properties']['security_group']['name']
+    conf_yaml['node_templates'][k]['properties']['resource_id'] = sg_name
     
+
 for k in conf_yaml['outputs'].keys():
   if k.startswith('ellis'):
     conf_yaml['outputs'].pop(k)

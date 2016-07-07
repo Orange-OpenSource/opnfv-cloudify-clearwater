@@ -46,6 +46,11 @@ inputs:
     type: string
     description: Sip domain for sip users and bono load-balancing
 
+  private_domain:
+    type: string
+    default: site1.clearwater.local
+    description: Sip domain for Internal communication
+
   local_site_name:
     type: string
     description: Name of local site for multisite configuration
@@ -106,12 +111,12 @@ node_types:
     properties:
       private_domain:
         type: string
-        default: clearwater.local
+        default: { get_input: private_domain }
       public_domain:
-        description: Sip domain for sip users and bono load-balancing
+        type: string
         default: { get_input: public_domain }
       secret_code:
-        description: Secret code
+        type: string
         default: secret
       local_site_name:
         type: string
@@ -122,7 +127,7 @@ node_types:
       dns_ips:
         default: { get_input: dns_ips }
       etcd_ip:
-        default: { get_attribute: [ ellis_host, ip ] }
+        default: { get_input: etcd_ip }
 
 relationships:
   cw_base_connected_to_DNS:
