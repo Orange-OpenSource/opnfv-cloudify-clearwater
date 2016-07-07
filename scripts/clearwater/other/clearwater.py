@@ -34,7 +34,7 @@ CONFIG_PATH_NAMESERVER = '/etc/dnsmasq.resolv.conf'
 # Path of jinja template config files
 TEMPLATE_RESOURCE_NAME = 'resources/clearwater/local_config.template'
 TEMPLATE_RESOURCE_NAME_NAMESERVER = 'resources/bind/dnsmasq.template'
-
+TEMPLATE_RESOURCE_NAME_ETCD = 'resources/clearwater/shared_config.template'
 
 def configure(subject=None):
     subject = subject or ctx
