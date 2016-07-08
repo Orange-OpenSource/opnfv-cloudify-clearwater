@@ -63,8 +63,8 @@ inputs:
     default: []
     description: ips of desginate api and dns server
 
-  etcd_ip:
-    type: string
+  etcd_ips:
+    default: []
     description: ip of etcd cluster
 
 node_types:
@@ -130,8 +130,8 @@ node_types:
         default: { get_input: remote_site_name }
       dns_ips:
         default: { get_input: dns_ips }
-      etcd_ip:
-        default: { get_input: etcd_ip }
+      etcd_ips:
+        default: { get_input: etcd_ips }
 
 relationships:
   cw_base_connected_to_DNS:

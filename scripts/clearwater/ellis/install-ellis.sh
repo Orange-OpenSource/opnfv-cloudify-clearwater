@@ -19,8 +19,8 @@ ctx logger info "Configure a new DNS server"
 echo 'RESOLV_CONF=/etc/dnsmasq.resolv.conf' | sudo tee --append  /etc/default/dnsmasq
 sudo service dnsmasq force-reload
 
-#/usr/share/clearwater/clearwater-etcd/scripts/wait_for_etcd
-#sudo /usr/share/clearwater/clearwater-config-manager/scripts/upload_shared_config
+/usr/share/clearwater/clearwater-etcd/scripts/wait_for_etcd
+sudo /usr/share/clearwater/clearwater-config-manager/scripts/upload_shared_config
 
 #sudo service clearwater-infrastructure restart
 #sudo service ellis stop
