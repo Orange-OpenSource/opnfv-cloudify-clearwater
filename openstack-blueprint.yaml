@@ -63,6 +63,10 @@ inputs:
     default: []
     description: ips of desginate api and dns server
 
+  etcd_ip:
+    type: string
+    description: ip of etcd cluster
+
 node_types:
 
   # Global types for VMs
