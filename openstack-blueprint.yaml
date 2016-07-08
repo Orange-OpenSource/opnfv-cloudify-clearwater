@@ -367,7 +367,7 @@ node_templates:
     properties:
       dns_ips: { get_input: dns_ips }
       domains:
-        - clearwater.local
+        - { get_input: private_domain }
         - { get_input: public_domain }
       install_agent: false
 
