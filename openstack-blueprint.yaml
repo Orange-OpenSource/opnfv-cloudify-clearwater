@@ -143,7 +143,7 @@ relationships:
           executor: central_deployment_agent
           inputs:
             domain:
-              default: clearwater.local
+              default: { get_input: private_domain }
             record_ip:
               default: ""
             other_roles: 
@@ -155,7 +155,7 @@ relationships:
           executor: central_deployment_agent
           inputs:
             domain:
-              default: clearwater.local
+              default: { get_input: private_domain }
             record_ip:
               default: ""
             other_roles: 
