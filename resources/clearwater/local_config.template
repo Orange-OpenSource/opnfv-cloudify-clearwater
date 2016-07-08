@@ -1,7 +1,7 @@
 local_ip={{host_ip}}
 public_ip={{public_ip}}
 public_hostname={{name}}.{{private_domain}}
-etcd_cluster="{% for etcd_ip in etcd_ips -%}etcd_ip{% if not loop.last -%},{%- endif %}{%- endfor %}"
+etcd_cluster="{% for etcd_ip in etcd_ips -%}{{etcd_ip}}{% if not loop.last -%},{%- endif %}{%- endfor %}"
 
 local_site_name={{local_site_name}}
 remote_site_name={{remote_site_name}}
