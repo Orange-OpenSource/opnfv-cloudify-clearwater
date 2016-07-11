@@ -1,4 +1,4 @@
-local_ip={{host_ip}}
+local_ip=$(ip addr show eth0 | grep "inet\b" | awk '{print $2}' | cut -d/ -f1)
 public_ip={{public_ip}}
 public_hostname={{name}}.{{private_domain}}
 etcd_cluster="{% for etcd_ip in etcd_ips -%}{{etcd_ip}}{% if not loop.last -%},{%- endif %}{%- endfor %}"
