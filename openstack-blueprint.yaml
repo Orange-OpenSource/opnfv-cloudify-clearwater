@@ -63,8 +63,8 @@ inputs:
     default: []
     description: ips of desginate api and dns server
 
-  etcd_ips:
-    default: []
+  etcd_ip:
+    type: string
     description: ip of etcd cluster
 
 node_types:
@@ -130,8 +130,8 @@ node_types:
         default: { get_input: remote_site_name }
       dns_ips:
         default: { get_input: dns_ips }
-      etcd_ips:
-        default: { get_input: etcd_ips }
+      etcd_ip:
+        default: { get_input: etcd_ip }
 
 relationships:
   cw_base_connected_to_DNS:
@@ -164,6 +164,52 @@ relationships:
               default: []
 
 node_templates:
+
+  manager_host:
+    type: cloudify.nodes.Compute
+    properties:
+      install_agent: true
+      ip: '127.0.0.1'
+      cloudify_agent:
+        user: cloud
+        key: ~/.ssh/agent_key.pem
+
+  clearwater_mgmt_container:
+    type: cloudify.docker.Container
+    properties:
+      name: clearwater-management
+      image:
+        repository: boucherv/clearwater-management
+    interfaces:
+      cloudify.interfaces.lifecycle:
+        create:
+          implementation: docker.docker_plugin.tasks.create_container
+          inputs:
+            params:
+              detach: true
+              stdin_open: true
+              tty: true
+              command: ./start.sh
+        start:
+          implementation: docker.docker_plugin.tasks.start
+          inputs:
+            params:
+              network_mode: host
+              binds: 
+                - /etc/clearwater/local_config:/etc/clearwater/local_config
+                - /etc/clearwater/shared_config:/etc/clearwater/shared_config
+    relationships:
+      - type: cloudify.relationships.contained_in
+        target: manager_host
+      - type: cloudify.relationships.connected_to
+        target: config
+
+  config:
+    type: clearwater.nodes.config
+    relationships:
+      - type: cloudify.relationships.contained_in
+        target: manager_host
+
 
   # Declare host VMs and attach them at floating ip or security group
   sprout_host:

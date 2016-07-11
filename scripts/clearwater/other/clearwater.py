@@ -59,7 +59,8 @@ def configure(subject=None):
     config.update(dict(
         name=name.replace('_','-'),
         host_ip=subject.instance.host_ip,
-        public_ip=public_ip))
+        public_ip=public_ip,
+        etcd_ips=[config['etcd_ip']]))
 
 
     ctx.logger.debug('Rendering the Jinja2 template to {0}.'.format(CONFIG_PATH))
@@ -79,7 +80,7 @@ def configure(subject=None):
 
     # Generate shared_config file for clearwater-etcd software
     role = re.split(r'_',name)[0]
-    if role=="ellis":
+    if role=="config":
         template = Template(ctx.get_resource(TEMPLATE_RESOURCE_NAME_ETCD))
 
         ctx.logger.debug('Rendering the Jinja2 template to {0}.'.format(CONFIG_PATH_ETCD))
