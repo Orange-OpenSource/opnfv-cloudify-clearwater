@@ -190,12 +190,18 @@ node_templates:
               detach: true
               stdin_open: true
               tty: true
+              ports:
+                - 4000
+                - 2380
               command: ./start.sh
         start:
           implementation: docker.docker_plugin.tasks.start
           inputs:
             params:
               network_mode: host
+              port_bindings:
+                4000: 4000
+                2380: 2380
               binds: 
                 - /etc/clearwater/local_config:/etc/clearwater/local_config
                 - /etc/clearwater/shared_config:/etc/clearwater/shared_config
