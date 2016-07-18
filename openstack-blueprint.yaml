@@ -94,6 +94,10 @@ node_templates:
   # Declare host VMs and attach them at floating ip or security group
   sprout_host:
     type: clearwater.nodes.MonitoredServer
+    capabilities:
+      scalable:
+        properties:
+          default_instances: 1
     instances:
       deploy: 2
     relationships:
@@ -487,7 +491,22 @@ groups:
   clearwater_hosts:
     members: [sprout_host]
     policies:
-      mem_scale_policy:
+      up_scale_policy:
+        type: cloudify.policies.types.threshold
+        properties:
+          service: cpu.total.user
+          stability_time: 60
+          threshold: 55
+        triggers:
+          scale_trigger:
+            type: cloudify.policies.triggers.execute_workflow
+            parameters:
+              workflow: scale
+              workflow_parameters:
+                node_id: sprout
+                delta: 1
+                
+      down_scale_policy:
         type: cloudify.policies.types.threshold
         properties:
           service: cpu.total.user
@@ -500,7 +519,9 @@ groups:
               workflow: scale
               workflow_parameters:
                 node_id: sprout
-                delta: 1
+                delta: -1
+                min_instances: 1
+                max_instances: 5
 
 outputs:
   dns_ip:
