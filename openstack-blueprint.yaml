@@ -492,7 +492,7 @@ groups:
   clearwater_hosts:
     members: [sprout_host]
     policies:
-     up_scale_policy:
+      up_scale_policy:
         type: cloudify.policies.types.threshold
         properties:
           service: cpu.total.user
