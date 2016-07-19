@@ -492,7 +492,7 @@ groups:
   clearwater_hosts:
     members: [sprout_host]
     policies:
-      up_scale_policy:
+     up_scale_policy:
         type: cloudify.policies.types.threshold
         properties:
           service: cpu.total.user
@@ -516,7 +516,7 @@ groups:
           threshold: 25
           upper_bound: false
           stability_time: 60
-       triggers:
+        triggers:
           scale_trigger:
             type: cloudify.policies.triggers.execute_workflow
             parameters:
