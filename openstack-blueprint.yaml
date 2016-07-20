@@ -94,10 +94,8 @@ node_templates:
   # Declare host VMs and attach them at floating ip or security group
   sprout_host:
     type: clearwater.nodes.MonitoredServer
-    capabilities:
-      scalable:
-        properties:
-          default_instances: 1
+    instances:
+      deploy: 3
     relationships:
       - target: base_security_group
         type: cloudify.openstack.server_connected_to_security_group
@@ -494,7 +492,6 @@ groups:
         properties:
           service: cpu.total.user
           threshold: 25
-          upper_bound: true
           stability_time: 60
         triggers:
           scale_trigger:
@@ -511,7 +508,6 @@ groups:
         properties:
           service: cpu.total.user
           threshold: 5
-          upper_bound: false
           stability_time: 60
         triggers:
           scale_trigger:
