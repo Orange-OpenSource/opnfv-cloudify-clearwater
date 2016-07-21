@@ -499,7 +499,8 @@ groups:
             parameters:
               workflow: scale
               workflow_parameters:
-                node_id: sprout
+                scalable_entity_name: sprout
+                scale_compute: true
                 delta: 1
                 max_instances: 5
                 
@@ -515,7 +516,8 @@ groups:
             parameters:
               workflow: scale
               workflow_parameters:
-                node_id: sprout
+                scalable_entity_name: sprout
+                scale_compute: true
                 delta: -1
                 min_instances: 1
                 
