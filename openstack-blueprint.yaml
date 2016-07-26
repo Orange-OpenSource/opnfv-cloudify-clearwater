@@ -1,6 +1,6 @@
 #######################################################################
 # 
-#   Copyright (c) 2015 Orange
+#   Copyright (c) 2016 Orange
 #   valentin.boucher@orange.com
 #
 # All rights reserved. This program and the accompanying materials
@@ -111,8 +111,10 @@ node_templates:
 
   bono_host:
     type: clearwater.nodes.MonitoredServer
-    instances:
-      deploy: 1
+    capabilities:
+      scalable:
+        properties:
+          min_instances: 1
     relationships:
       - target: bono_floatingip
         type: cloudify.openstack.server_connected_to_floating_ip
@@ -128,6 +130,11 @@ node_templates:
 
   ellis_host:
     type: clearwater.nodes.MonitoredServer
+    capabilities:
+      scalable:
+        properties:
+          min_instances: 1
+          max_instances: 1
     relationships:
       - target: ellis_floatingip
         type: cloudify.openstack.server_connected_to_floating_ip
@@ -140,8 +147,10 @@ node_templates:
 
   homestead_host:
     type: clearwater.nodes.MonitoredServer
-    instances:
-      deploy: 1
+    capabilities:
+      scalable:
+        properties:
+          min_instances: 1
     relationships:
       - target: base_security_group
         type: cloudify.openstack.server_connected_to_security_group
@@ -151,8 +160,10 @@ node_templates:
 
   ralf_host:
     type: clearwater.nodes.MonitoredServer
-    instances:
-      deploy: 1
+    capabilities:
+      scalable:
+        properties:
+          min_instances: 0
     relationships:
       - target: base_security_group
         type: cloudify.openstack.server_connected_to_security_group
@@ -162,8 +173,10 @@ node_templates:
 
   homer_host:
     type: clearwater.nodes.MonitoredServer
-    instances:
-      deploy: 1
+    capabilities:
+      scalable:
+        properties:
+          min_instances: 1
     relationships:
       - target: base_security_group
         type: cloudify.openstack.server_connected_to_security_group
@@ -174,6 +187,11 @@ node_templates:
 
   bind_host:
     type: clearwater.nodes.MonitoredServer
+    capabilities:
+      scalable:
+        properties:
+          min_instances: 1
+          max_instances: 1
     relationships:
       - target: base_security_group
         type: cloudify.openstack.server_connected_to_security_group
@@ -187,6 +205,11 @@ node_templates:
 
   proxy_host:
     type: cloudify.openstack.nodes.Server
+    capabilities:
+      scalable:
+        properties:
+          min_instances: 1
+          max_instances: 1
     properties:
       cloudify_agent:
           user: { get_input: agent_user }
@@ -503,8 +526,8 @@ groups:
               workflow: scale
               workflow_parameters:
                 scalable_entity_name: sprout
-                scale_compute: true
                 delta: 1
+                scale_compute: true
                 max_instances: 5
                 
       down_scale_policy:
@@ -512,6 +535,7 @@ groups:
         properties:
           service: cpu.total.user
           threshold: 10
+          upper_bound: false
           stability_time: 60
         triggers:
           scale_trigger:
@@ -522,7 +546,6 @@ groups:
                 scalable_entity_name: sprout
                 scale_compute: true
                 delta: -1
-                min_instances: 1
                 
 
 outputs:
