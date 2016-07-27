@@ -99,7 +99,7 @@ node_templates:
         properties:
           default_instances: 3
           min_instances: 1
-          max_instances: 1
+          max_instances: 5
     relationships:
       - target: base_security_group
         type: cloudify.openstack.server_connected_to_security_group
