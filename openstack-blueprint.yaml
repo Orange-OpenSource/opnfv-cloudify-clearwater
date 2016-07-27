@@ -529,7 +529,6 @@ groups:
                 scalable_entity_name: sprout
                 scale_compute: true
                 max_instances: 5
-                default: 1
                 delta: 1
                 
       down_scale_policy:
@@ -547,8 +546,7 @@ groups:
               workflow_parameters:
                 scalable_entity_name: sprout
                 scale_compute: true
-                min_instances: 5
-                default: 1
+                min_instances: 1
                 delta: -1
                 
 
