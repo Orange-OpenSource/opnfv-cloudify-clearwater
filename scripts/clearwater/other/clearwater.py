@@ -59,7 +59,7 @@ def configure(subject=None):
     etcd_ip = config['etcd_ip']
     role = re.split(r'_',name)[0]
     if role=="config":
-        etcd_ip = """$(ip addr show eth0 | grep "inet\b" | awk '{print $2}' | cut -d/ -f1)"""
+        etcd_ip = "$(ip addr show eth0 | grep 'inet\\b' | awk '{print $2}' | cut -d/ -f1)"
     config.update(dict(
         name=name.replace('_','-'),
         host_ip=subject.instance.host_ip,
