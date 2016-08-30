@@ -21,14 +21,12 @@ inputs:
 node_templates:
   base_security_group:
     properties:
-      resource_id: clearwater-sg_base
       rules:
       - {port: 22, remote_ip_prefix: 0.0.0.0/0}
       - {port: 4000, remote_ip_prefix: 0.0.0.0/0}
       - {port: 2380, remote_ip_prefix: 0.0.0.0/0}
       - {port: 161, protocol: udp, remote_ip_prefix: 0.0.0.0/0}
       security_group: {description: SSH, name: clearwater-sg_base}
-      use_external_resource: true
     type: cloudify.openstack.nodes.SecurityGroup
   bono:
     relationships:
@@ -68,7 +66,6 @@ node_templates:
     type: clearwater.nodes.MonitoredServer
   bono_security_group:
     properties:
-      resource_id: clearwater-sg_bono
       rules:
       - {port: 3478, remote_ip_prefix: 0.0.0.0/0}
       - {port: 3478, protocol: udp, remote_ip_prefix: 0.0.0.0/0}
@@ -78,7 +75,6 @@ node_templates:
       - {port_range_max: 65535, port_range_min: 32768, protocol: udp, remote_ip_prefix: 0.0.0.0/0}
       - {port: 6669, remote_ip_prefix: 0.0.0.0/0}
       security_group: {description: STUN SIP RTP 0MQ, name: clearwater-sg_bono}
-      use_external_resource: true
     type: cloudify.openstack.nodes.SecurityGroup
   clearwater_mgmt_container:
     interfaces:
@@ -132,13 +128,11 @@ node_templates:
     type: clearwater.nodes.MonitoredServer
   homer_security_group:
     properties:
-      resource_id: clearwater-sg_homer
       rules:
       - {port: 7888, remote_ip_prefix: 0.0.0.0/0}
       - {port: 7000, remote_ip_prefix: 0.0.0.0/0}
       - {port: 6665, remote_ip_prefix: 0.0.0.0/0}
       security_group: {description: REST Cassandra 0MQ, name: clearwater-sg_homer}
-      use_external_resource: true
     type: cloudify.openstack.nodes.SecurityGroup
   homestead:
     relationships:
@@ -153,24 +147,20 @@ node_templates:
     type: clearwater.nodes.MonitoredServer
   homestead_security_group:
     properties:
-      resource_id: clearwater-sg_homestead
       rules:
       - {port: 8888, remote_ip_prefix: 0.0.0.0/0}
       - {port: 8889, remote_ip_prefix: 0.0.0.0/0}
       - {port: 7000, remote_ip_prefix: 0.0.0.0/0}
       - {port_range_max: 6668, port_range_min: 6667, remote_ip_prefix: 0.0.0.0/0}
       security_group: {description: REST Cassandra 0MQ, name: clearwater-sg_homestead}
-      use_external_resource: true
     type: cloudify.openstack.nodes.SecurityGroup
   internal_sip_security_group:
     properties:
-      resource_id: clearwater-sg_internal_sip
       rules:
       - {port: 5058, remote_ip_prefix: 0.0.0.0/0}
       - {port: 5054, remote_ip_prefix: 0.0.0.0/0}
       - {port: 5052, remote_ip_prefix: 0.0.0.0/0}
       security_group: {description: Internal SIP signalling, name: clearwater-sg_internal_sip}
-      use_external_resource: true
     type: cloudify.openstack.nodes.SecurityGroup
   manager_host:
     properties:
@@ -211,13 +201,11 @@ node_templates:
     type: clearwater.nodes.MonitoredServer
   ralf_security_group:
     properties:
-      resource_id: clearwater-sg_ralf
       rules:
       - {port: 11211, remote_ip_prefix: 0.0.0.0/0}
       - {port: 7253, remote_ip_prefix: 0.0.0.0/0}
       - {port: 10888, remote_ip_prefix: 0.0.0.0/0}
       security_group: {description: memcached Chronos REST, name: clearwater-sg_ralf}
-      use_external_resource: true
     type: cloudify.openstack.nodes.SecurityGroup
   sprout:
     relationships:
@@ -249,13 +237,11 @@ node_templates:
     type: clearwater.nodes.MonitoredServer
   sprout_security_group:
     properties:
-      resource_id: clearwater-sg_sprout
       rules:
       - {port: 11211, remote_ip_prefix: 0.0.0.0/0}
       - {port: 7253, remote_ip_prefix: 0.0.0.0/0}
       - {port: 6666, remote_ip_prefix: 0.0.0.0/0}
       security_group: {description: memcached Chronos 0MQ, name: clearwater-sg_sprout}
-      use_external_resource: true
     type: cloudify.openstack.nodes.SecurityGroup
 node_types:
   clearwater.nodes.MonitoredServer:
