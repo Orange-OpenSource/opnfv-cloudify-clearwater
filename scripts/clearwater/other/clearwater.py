@@ -56,12 +56,15 @@ def configure(subject=None):
                     public_ip = elements.target.instance.runtime_properties['floating_ip_address']
 
     config = subject.node.properties.copy()
+    etcd_ip = config['etcd_ip']
+    role = re.split(r'_',name)[0]
+    if role=="config":
+        etcd_ip = """$(ip addr show eth0 | grep "inet\b" | awk '{print $2}' | cut -d/ -f1)"""
     config.update(dict(
         name=name.replace('_','-'),
         host_ip=subject.instance.host_ip,
         public_ip=public_ip,
-        etcd_ips=[config['etcd_ip']]))
-
+        etcd_ips=[etcd_ip]))
 
     ctx.logger.debug('Rendering the Jinja2 template to {0}.'.format(CONFIG_PATH))
     ctx.logger.debug('The config dict: {0}.'.format(config))
