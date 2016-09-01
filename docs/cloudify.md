@@ -31,9 +31,9 @@ virtualenv cloudify
 source cloudify/bin/activate
 cd cloudify
 ```
-Install cloudify CLI version 3.2 with the PIP command : 
+Install cloudify CLI version 3.3.1 with the PIP command : 
 ```
-pip install cloudify==3.3
+pip install cloudify==3.3.1
 ```
 
 Test if the command cfy exists 
@@ -63,7 +63,7 @@ cd cloudify-manager
 
 Download manager blueprint version 3.3 :
 ```
-git clone -b 3.3-build https://github.com/cloudify-cosmo/cloudify-manager-blueprints.git
+git clone -b 3.3.1-build https://github.com/boucherv-orange/cloudify-manager-blueprints.git
 ```
 
 Prepare deployment on OpenStack platform :
