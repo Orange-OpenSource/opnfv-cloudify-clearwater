@@ -58,7 +58,7 @@ def configure(subject=None):
     config = subject.node.properties.copy()
     etcd_ip = config['etcd_ip']
     role = re.split(r'_',name)[0]
-    if role=="config":
+    if role=="config" and config['local_site_name'] == 'site1':
         etcd_ip = "$(ip addr show eth0 | grep 'inet\\b' | awk '{print $2}' | cut -d/ -f1)"
     config.update(dict(
         name=name.replace('_','-'),
