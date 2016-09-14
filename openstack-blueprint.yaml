@@ -97,7 +97,7 @@ node_templates:
     capabilities:
       scalable:
         properties:
-          default_instances: 3
+          default_instances: 1
           min_instances: 1
     relationships:
       - target: base_security_group
@@ -507,48 +507,7 @@ node_templates:
         floating_network_name: { get_input: external_network_name }
 
 
-  # Declare scaling policies for clearwater nodes
   
-groups:
-  clearwater_hosts:
-    members: [sprout_host]
-    policies:
-      up_scale_policy:
-        type: cloudify.policies.types.threshold
-        properties:
-          service: cpu.total.user
-          threshold: 25
-          stability_time: 60
-        triggers:
-          scale_trigger:
-            type: cloudify.policies.triggers.execute_workflow
-            parameters:
-              workflow: scale
-              workflow_parameters:
-                scalable_entity_name: sprout
-                delta: 1
-                scale_compute: true
-                max_instances: 5
-                
-                
-      down_scale_policy:
-        type: cloudify.policies.types.threshold
-        properties:
-          service: cpu.total.user
-          threshold: 10
-          upper_bound: false
-          stability_time: 600
-        triggers:
-          scale_trigger:
-            type: cloudify.policies.triggers.execute_workflow
-            parameters:
-              workflow: scale
-              workflow_parameters:
-                scalable_entity_name: sprout
-                scale_compute: true
-                min_instances: 1
-                delta: -1
-                
 
 outputs:
   dns_ip:
