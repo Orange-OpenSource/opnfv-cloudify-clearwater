@@ -1,4 +1,4 @@
-#!/bin/bash -e
+!/bin/bash -e 
 
 ctx logger debug "${COMMAND}"
 
@@ -16,7 +16,18 @@ sudo DEBIAN_FRONTEND=noninteractive apt-get install clearwater-management --yes 
 sudo DEBIAN_FRONTEND=noninteractive apt-get install clearwater-snmpd --yes --force-yes
 ctx logger info "The installation packages is done correctly"
 
+
+
+IPECHO_IP=$(dig ipecho.net @8.8.8.8 | egrep '^ipecho.net.' |cut -dA -f2 |perl -pe 's/\s//g')
+echo "$IPECHO_IP ipecho.net" >> /etc/hosts
+echo public_ip=`wget http://ipecho.net/plain -O - -q ;`               | sudo tee --append /etc/clearwater/local_config
+echo public_hostname=`wget http://ipecho.net/plain -O - -q ;`         | sudo tee --append /etc/clearwater/local_config
+echo local_ip = $(hostname -I)                                        | sudo tee --append /etc/clearwater/local_config
+
+
 ctx logger info "Configure a new DNS server"
 echo 'RESOLV_CONF=/etc/dnsmasq.resolv.conf' | sudo tee --append  /etc/default/dnsmasq
 sudo service dnsmasq force-reload
 ctx logger info "Installation is done"
+echo " End"
+
