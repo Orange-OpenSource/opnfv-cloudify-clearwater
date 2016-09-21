@@ -97,7 +97,7 @@ node_templates:
     capabilities:
       scalable:
         properties:
-          default_instances: 1
+          default_instances: 2
           min_instances: 1
     relationships:
       - target: base_security_group
@@ -114,6 +114,7 @@ node_templates:
     capabilities:
       scalable:
         properties:
+         default_instances: 2
           min_instances: 1
     relationships:
       - target: bono_floatingip
@@ -150,6 +151,7 @@ node_templates:
     capabilities:
       scalable:
         properties:
+          default_instances: 2
           min_instances: 1
     relationships:
       - target: base_security_group
@@ -163,7 +165,8 @@ node_templates:
     capabilities:
       scalable:
         properties:
-          min_instances: 0
+          default_instances: 2
+          min_instances: 1
     relationships:
       - target: base_security_group
         type: cloudify.openstack.server_connected_to_security_group
@@ -176,6 +179,7 @@ node_templates:
     capabilities:
       scalable:
         properties:
+          default_instances: 2
           min_instances: 1
     relationships:
       - target: base_security_group
