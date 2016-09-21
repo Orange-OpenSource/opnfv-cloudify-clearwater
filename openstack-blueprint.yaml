@@ -114,7 +114,7 @@ node_templates:
     capabilities:
       scalable:
         properties:
-         default_instances: 2
+          default_instances: 2
           min_instances: 1
     relationships:
       - target: bono_floatingip
