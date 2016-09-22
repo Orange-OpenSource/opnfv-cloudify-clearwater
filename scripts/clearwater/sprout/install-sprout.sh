@@ -33,7 +33,6 @@ ctx logger info "The installation packages is done correctly"
 
 echo '
 log_level=5
-
 authentication='Y''| sudo tee --append /etc/clearwater/user_settings
 
 
