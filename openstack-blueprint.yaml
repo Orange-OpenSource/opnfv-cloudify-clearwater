@@ -99,6 +99,7 @@ node_templates:
         properties:
           default_instances: 2
           min_instances: 1
+          max_instances: 5
     relationships:
       - target: base_security_group
         type: cloudify.openstack.server_connected_to_security_group
@@ -518,7 +519,7 @@ groups:
         type: cloudify.policies.types.threshold
         properties:
           service: cpu.total.user
-          threshold: 20
+          threshold: 30
           upper_bound: true
           stability_time: 30
         triggers:
@@ -537,9 +538,9 @@ groups:
         type: cloudify.policies.types.threshold
         properties:
           service: cpu.total.user
-          threshold: 10
+          threshold: 25
           upper_bound: false
-          stability_time: 3600
+          stability_time: 600
         triggers:
           scale_trigger:
             type: cloudify.policies.triggers.execute_workflow
@@ -548,7 +549,6 @@ groups:
               workflow_parameters:
                 scalable_entity_name: sprout
                 scale_compute: true
-                min_instances: 2
                 delta: -1
                 
 
