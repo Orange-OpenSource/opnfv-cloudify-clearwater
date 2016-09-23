@@ -23,7 +23,7 @@ Download **blueprint** :
 cd ~/cloudify/cloudify-manager/
 mkdir blueprints
 cd blueprints
-git clone -b Lastwotoday https://github.com/Orange-OpenSource/opnfv-cloudify-clearwater.git
+git clone -b lastwotoday https://github.com/Orange-OpenSource/opnfv-cloudify-clearwater.git
 ```
 Upload **blueprint** on the orchestrator :
 ```
