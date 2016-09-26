@@ -97,7 +97,7 @@ node_templates:
     capabilities:
       scalable:
         properties:
-          default_instances: 2
+          default_instances: 1
           min_instances: 1
           max_instances: 5
     relationships:
@@ -115,7 +115,7 @@ node_templates:
     capabilities:
       scalable:
         properties:
-          default_instances: 2
+          default_instances: 1
           min_instances: 1
     relationships:
       - target: bono_floatingip
@@ -152,7 +152,7 @@ node_templates:
     capabilities:
       scalable:
         properties:
-          default_instances: 2
+          default_instances: 1
           min_instances: 1
     relationships:
       - target: base_security_group
@@ -166,7 +166,7 @@ node_templates:
     capabilities:
       scalable:
         properties:
-          default_instances: 2
+          default_instances: 1
           min_instances: 1
     relationships:
       - target: base_security_group
@@ -180,7 +180,7 @@ node_templates:
     capabilities:
       scalable:
         properties:
-          default_instances: 2
+          default_instances: 1
           min_instances: 1
     relationships:
       - target: base_security_group
@@ -521,7 +521,7 @@ groups:
           service: cpu.total.user
           threshold: 30
           upper_bound: true
-          stability_time: 30
+          stability_time: 60
         triggers:
           scale_trigger:
             type: cloudify.policies.triggers.execute_workflow
@@ -538,7 +538,7 @@ groups:
         type: cloudify.policies.types.threshold
         properties:
           service: cpu.total.user
-          threshold: 25
+          threshold: 15
           upper_bound: false
           stability_time: 600
         triggers:
@@ -550,6 +550,7 @@ groups:
                 scalable_entity_name: sprout
                 scale_compute: true
                 delta: -1
+                min_instances: 1
                 
 
 
