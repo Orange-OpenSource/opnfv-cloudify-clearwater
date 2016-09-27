@@ -519,7 +519,7 @@ groups:
         type: cloudify.policies.types.threshold
         properties:
           service: cpu.total.user
-          threshold: 25
+          threshold: 30
           upper_bound: true
           stability_time: 60
         triggers:
