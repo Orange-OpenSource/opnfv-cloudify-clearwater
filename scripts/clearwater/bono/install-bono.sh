@@ -19,7 +19,7 @@ ctx logger info "The installation packages is done correctly"
 
 IPECHO_IP=$(dig ipecho.net @8.8.8.8 | egrep '^ipecho.net.' |cut -dA -f2 |perl -pe 's/\s//g')
 echo "$IPECHO_IP ipecho.net" >> /etc/hosts
-echo -e "\n" | sudo tee --append /etc/clearwater/local_config
+echo "\n" | sudo tee --append /etc/clearwater/local_config
 echo public_hostname=`wget http://ipecho.net/plain -O - -q ;`         | sudo tee --append /etc/clearwater/local_config
 
 
