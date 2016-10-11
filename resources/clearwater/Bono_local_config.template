@@ -1,4 +1,5 @@
 local_ip={{host_ip}}
 public_ip={{public_ip}}
-public_hostname={{public_ip}}
+#public_hostname={{public_ip}}
 etcd_cluster={{etcd_ip}}
+
