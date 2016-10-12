@@ -34,10 +34,10 @@ Then, you can deploy, monitor, scale and test the clearwater vIMS by following t
 
 ## OPNFV
 
-This blueprint is used in OPNFV functest project.  The goal of Functest consists in providing comprehensive testing methodology, test suites and test cases to test and verify OPNFV Platform functionality that covers the VIM and NFVI components. [See](https://wiki.opnfv.org/opnfv_functional_testing) for details on OPNFV/functest !
+This blueprint is used in OPNFV functest project.  The goal of Functest consists in providing comprehensive testing methodology, test suites and test cases to test and verify OPNFV Platform functionality that covers the VIM and NFVI components. [See](https://wiki.opnfv.org/opnfv_functional_testing) for details on OPNFV/functest ! [See](http://fr.slideshare.net/ValentinBoucher/opnfvfunctest-lessons-learned-and-best-practices-for-vnf-test-automation) for more details about VNF Testing on OPNFV ! 
 
 In the first release (called Arno), first test suites were focused on the VIM, NFVI and SDN controller through the integration of existing upstream test suites (OpenStack and ODL). The vIMS testcase was also initially planned but finally not integrated.
-In the second release (called Brahmaputra), vIMS is considered as a candidate VNF for functional testing.
+In the second and third release (called Brahmaputra and Collorado), vIMS was integrated as VNF for functional testing.
 
 The goal of this test case consists in deploying and automatically testing a distributed vIMS based on clearwater solution within the OPNFV continuous integration.
 This test will provide interesting information on the deployment as well as KPI on the functional test suites. In a first step no performance tests are expected but they could be introduced later.
@@ -49,6 +49,9 @@ The different step for the continuous Integration can be summarized as follow :
 * The launch of a function test suite;
 * The test, log and monitoring information collection
 * The cleaning ot the tenant 
+
+![cloudify clearwater architecture](docs/OPNFV_BERLIN_vIMS.png)
+[See](http://fr.slideshare.net/ValentinBoucher/opnfvfunctest-lessons-learned-and-best-practices-for-vnf-test-automation) for more details about VNF Testing on OPNFV ! 
 
 ## License
 
