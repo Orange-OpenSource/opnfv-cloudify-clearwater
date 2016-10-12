@@ -1,6 +1,6 @@
 #######################################################################
 # 
-#   Copyright (c) 2015 Orange
+#   Copyright (c) 2016 Orange
 #   valentin.boucher@orange.com
 #
 # All rights reserved. This program and the accompanying materials
@@ -13,12 +13,12 @@
 # This Blueprint deploy the clearwater IMS on an openstack environment
 ########################################################################
 
-tosca_definitions_version: cloudify_dsl_1_2
+tosca_definitions_version: cloudify_dsl_1_3
 
 imports:
-  - http://www.getcloudify.org/spec/cloudify/3.3/types.yaml
-  - http://www.getcloudify.org/spec/openstack-plugin/1.3/plugin.yaml
-  - http://www.getcloudify.org/spec/diamond-plugin/1.3/plugin.yaml
+  - http://www.getcloudify.org/spec/cloudify/3.4/types.yaml
+  - http://www.getcloudify.org/spec/openstack-plugin/1.4/plugin.yaml
+  - http://www.getcloudify.org/spec/diamond-plugin/1.3.3/plugin.yaml
   - types/monitoring.yaml
   - types/clearwater.yaml
   - types/bind.yaml
@@ -94,8 +94,11 @@ node_templates:
   # Declare host VMs and attach them at floating ip or security group
   sprout_host:
     type: clearwater.nodes.MonitoredServer
-    instances:
-      deploy: 2
+    capabilities:
+      scalable:
+        properties:
+          default_instances: 3
+          min_instances: 1
     relationships:
       - target: base_security_group
         type: cloudify.openstack.server_connected_to_security_group
@@ -108,8 +111,10 @@ node_templates:
 
   bono_host:
     type: clearwater.nodes.MonitoredServer
-    instances:
-      deploy: 1
+    capabilities:
+      scalable:
+        properties:
+          min_instances: 1
     relationships:
       - target: bono_floatingip
         type: cloudify.openstack.server_connected_to_floating_ip
@@ -125,6 +130,11 @@ node_templates:
 
   ellis_host:
     type: clearwater.nodes.MonitoredServer
+    capabilities:
+      scalable:
+        properties:
+          min_instances: 1
+          max_instances: 1
     relationships:
       - target: ellis_floatingip
         type: cloudify.openstack.server_connected_to_floating_ip
@@ -137,8 +147,10 @@ node_templates:
 
   homestead_host:
     type: clearwater.nodes.MonitoredServer
-    instances:
-      deploy: 1
+    capabilities:
+      scalable:
+        properties:
+          min_instances: 1
     relationships:
       - target: base_security_group
         type: cloudify.openstack.server_connected_to_security_group
@@ -148,8 +160,10 @@ node_templates:
 
   ralf_host:
     type: clearwater.nodes.MonitoredServer
-    instances:
-      deploy: 1
+    capabilities:
+      scalable:
+        properties:
+          min_instances: 0
     relationships:
       - target: base_security_group
         type: cloudify.openstack.server_connected_to_security_group
@@ -159,8 +173,10 @@ node_templates:
 
   homer_host:
     type: clearwater.nodes.MonitoredServer
-    instances:
-      deploy: 1
+    capabilities:
+      scalable:
+        properties:
+          min_instances: 1
     relationships:
       - target: base_security_group
         type: cloudify.openstack.server_connected_to_security_group
@@ -171,6 +187,11 @@ node_templates:
 
   bind_host:
     type: clearwater.nodes.MonitoredServer
+    capabilities:
+      scalable:
+        properties:
+          min_instances: 1
+          max_instances: 1
     relationships:
       - target: base_security_group
         type: cloudify.openstack.server_connected_to_security_group
@@ -184,6 +205,11 @@ node_templates:
 
   proxy_host:
     type: cloudify.openstack.nodes.Server
+    capabilities:
+      scalable:
+        properties:
+          min_instances: 1
+          max_instances: 1
     properties:
       cloudify_agent:
           user: { get_input: agent_user }
@@ -297,6 +323,9 @@ node_templates:
         - remote_ip_prefix: 0.0.0.0/0
           port: 161
           protocol: udp
+        - remote_ip_prefix: 0.0.0.0/0
+          port: 162
+          protocol: udp
 
   bono_security_group:
     type: cloudify.openstack.nodes.SecurityGroup
@@ -307,22 +336,28 @@ node_templates:
       rules:
         - remote_ip_prefix: 0.0.0.0/0
           port: 3478
+          protocol: tcp
         - remote_ip_prefix: 0.0.0.0/0
           port: 3478
           protocol: udp
         - remote_ip_prefix: 0.0.0.0/0
           port: 5060
+          protocol: tcp
         - remote_ip_prefix: 0.0.0.0/0
           port: 5060
           protocol: udp
         - remote_ip_prefix: 0.0.0.0/0
           port: 5062
+          protocol: tcp
         - remote_ip_prefix: 0.0.0.0/0
           port_range_min: 32768
           port_range_max: 65535
           protocol: udp
         - remote_ip_prefix: 0.0.0.0/0
           port: 6669
+        - remote_ip_prefix: 0.0.0.0/0
+          port: 5058
+          protocol: tcp
 
   internal_sip_security_group:
     type: cloudify.openstack.nodes.SecurityGroup
@@ -333,10 +368,13 @@ node_templates:
       rules:
         - remote_ip_prefix: 0.0.0.0/0
           port: 5058
+          protocol: tcp
         - remote_ip_prefix: 0.0.0.0/0
           port: 5054
+          protocol: tcp
         - remote_ip_prefix: 0.0.0.0/0
           port: 5052
+          protocol: tcp
 
   sprout_security_group:
     type: cloudify.openstack.nodes.SecurityGroup
@@ -347,10 +385,24 @@ node_templates:
       rules:
         - remote_ip_prefix: 0.0.0.0/0
           port: 11211
+          protocol: tcp
         - remote_ip_prefix: 0.0.0.0/0
           port: 7253
+          protocol: tcp
+        - remote_ip_prefix: 0.0.0.0/0
+          port: 7000
+          protocol: tcp
+        - remote_ip_prefix: 0.0.0.0/0
+          port: 9160
+          protocol: tcp
+        - remote_ip_prefix: 0.0.0.0/0
+          port: 9888
+          protocol: tcp
         - remote_ip_prefix: 0.0.0.0/0
           port: 6666
+        - remote_ip_prefix: 0.0.0.0/0
+          port: 443
+          protocol: tcp
 
   ralf_security_group:
     type: cloudify.openstack.nodes.SecurityGroup
@@ -361,10 +413,13 @@ node_templates:
       rules:
         - remote_ip_prefix: 0.0.0.0/0
           port: 11211
+          protocol: tcp
         - remote_ip_prefix: 0.0.0.0/0
           port: 7253
+          protocol: tcp
         - remote_ip_prefix: 0.0.0.0/0
           port: 10888
+          protocol: tcp
 
   homestead_security_group:
     type: cloudify.openstack.nodes.SecurityGroup
@@ -375,10 +430,13 @@ node_templates:
       rules:
         - remote_ip_prefix: 0.0.0.0/0
           port: 8888
+          protocol: tcp
         - remote_ip_prefix: 0.0.0.0/0
           port: 8889
+          protocol: tcp
         - remote_ip_prefix: 0.0.0.0/0
           port: 7000
+          protocol: tcp
         - remote_ip_prefix: 0.0.0.0/0
           port_range_min: 6667
           port_range_max: 6668
@@ -392,8 +450,10 @@ node_templates:
       rules:
         - remote_ip_prefix: 0.0.0.0/0
           port: 7888
+          protocol: tcp
         - remote_ip_prefix: 0.0.0.0/0
           port: 7000
+          protocol: tcp
         - remote_ip_prefix: 0.0.0.0/0
           port: 6665
 
@@ -406,8 +466,10 @@ node_templates:
       rules:
         - remote_ip_prefix: 0.0.0.0/0
           port: 80
+          protocol: tcp
         - remote_ip_prefix: 0.0.0.0/0
           port: 443
+          protocol: tcp
 
   bind_security_group:
     type: cloudify.openstack.nodes.SecurityGroup
@@ -421,6 +483,9 @@ node_templates:
           protocol: udp
         - remote_ip_prefix: 0.0.0.0/0
           port: 53
+
+
+
 
   # Declare floating IP for bono, bind and ellis nodes 
   bono_floatingip:
@@ -443,23 +508,47 @@ node_templates:
 
 
   # Declare scaling policies for clearwater nodes
+  
 groups:
   clearwater_hosts:
     members: [sprout_host]
     policies:
-      mem_scale_policy:
+      up_scale_policy:
         type: cloudify.policies.types.threshold
         properties:
-          service: sprout_incoming
-          threshold: 20
+          service: cpu.total.user
+          threshold: 25
+          stability_time: 60
         triggers:
           scale_trigger:
             type: cloudify.policies.triggers.execute_workflow
             parameters:
               workflow: scale
               workflow_parameters:
-                node_id: sprout
+                scalable_entity_name: sprout
                 delta: 1
+                scale_compute: true
+                max_instances: 5
+                
+                
+      down_scale_policy:
+        type: cloudify.policies.types.threshold
+        properties:
+          service: cpu.total.user
+          threshold: 10
+          upper_bound: false
+          stability_time: 600
+        triggers:
+          scale_trigger:
+            type: cloudify.policies.triggers.execute_workflow
+            parameters:
+              workflow: scale
+              workflow_parameters:
+                scalable_entity_name: sprout
+                scale_compute: true
+                min_instances: 1
+                delta: -1
+                
 
 outputs:
   dns_ip:
