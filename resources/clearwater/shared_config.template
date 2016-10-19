@@ -14,6 +14,13 @@ hss_hostname={{hss_hostname}}
 hss_port={{hss_port}}
 {% endif %}
 
+# AS
+gemini=0
+memento=0
+cdiv=0
+mmtel=0
+mangelwurzel=0
+
 # Email server configuration
 smtp_smarthost=localhost
 smtp_username=username
