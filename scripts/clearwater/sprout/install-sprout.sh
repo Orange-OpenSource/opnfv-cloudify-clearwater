@@ -35,6 +35,13 @@ echo '
 log_level=5
 authentication='\'Y\'| sudo tee --append /etc/clearwater/user_settings
 
+echo '
+
+gemini=0
+memento=0
+cdiv=0
+mmtel=0
+mangelwurzel=0'| sudo tee --append /etc/clearwater/shared_config
 
 ctx logger info "Use the DNS server"
 echo 'RESOLV_CONF=/etc/dnsmasq.resolv.conf' | sudo tee --append  /etc/default/dnsmasq
