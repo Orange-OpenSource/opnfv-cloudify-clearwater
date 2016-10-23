@@ -530,7 +530,6 @@ groups:
               workflow_parameters:
                 scalable_entity_name: sprout
                 scale_compute: true
-                max_instances: 5
                 delta: 1
                 
                 
