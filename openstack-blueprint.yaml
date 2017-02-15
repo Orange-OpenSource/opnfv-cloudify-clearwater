@@ -1,5 +1,5 @@
 #######################################################################
-# 
+#
 #   Copyright (c) 2016 Orange
 #   valentin.boucher@orange.com
 #
@@ -17,8 +17,8 @@ tosca_definitions_version: cloudify_dsl_1_3
 
 imports:
   - http://www.getcloudify.org/spec/cloudify/3.4/types.yaml
-  - http://www.getcloudify.org/spec/openstack-plugin/1.4/plugin.yaml
-  - http://www.getcloudify.org/spec/diamond-plugin/1.3.3/plugin.yaml
+  - http://www.getcloudify.org/spec/openstack-plugin/2.0/plugin.yaml
+  - http://www.getcloudify.org/spec/diamond-plugin/1.3.5/plugin.yaml
   - types/monitoring.yaml
   - types/clearwater.yaml
   - types/bind.yaml
@@ -45,6 +45,11 @@ inputs:
   public_domain:
     type: string
     description: Sip domain for sip users and bono load-balancing
+
+  release:
+    type: string
+    default: stable
+    description: Clearwater release
 
 node_types:
 
@@ -231,6 +236,7 @@ node_templates:
     type: clearwater.nodes.sprout
     properties:
       private_domain: clearwater.local
+      release: { get_input: release }
     relationships:
       - type: cloudify.relationships.contained_in
         target: sprout_host
@@ -243,6 +249,7 @@ node_templates:
     type: clearwater.nodes.bono
     properties:
       private_domain: clearwater.local
+      release: { get_input: release }
     relationships:
       - type: cloudify.relationships.contained_in
         target: bono_host
@@ -254,6 +261,7 @@ node_templates:
     type: clearwater.nodes.ellis
     properties:
       private_domain: clearwater.local
+      release: { get_input: release }
     relationships:
       - type: cloudify.relationships.contained_in
         target: ellis_host
@@ -264,6 +272,7 @@ node_templates:
     type: clearwater.nodes.ralf
     properties:
       private_domain: clearwater.local
+      release: { get_input: release }
     relationships:
       - type: cloudify.relationships.contained_in
         target: ralf_host
@@ -274,6 +283,7 @@ node_templates:
     type: clearwater.nodes.homestead
     properties:
       private_domain: clearwater.local
+      release: { get_input: release }
     relationships:
       - type: cloudify.relationships.contained_in
         target: homestead_host
@@ -284,6 +294,7 @@ node_templates:
     type: clearwater.nodes.homer
     properties:
       private_domain: clearwater.local
+      release: { get_input: release }
     relationships:
       - type: cloudify.relationships.contained_in
         target: homer_host
@@ -294,6 +305,7 @@ node_templates:
     type: clearwater.infra.bind
     properties:
       private_domain: clearwater.local
+      release: { get_input: release }
       public_domain: { get_input: public_domain }
       secret_code: secret
     relationships:
@@ -361,7 +373,7 @@ node_templates:
 
   internal_sip_security_group:
     type: cloudify.openstack.nodes.SecurityGroup
-    properties: 
+    properties:
       security_group:
         name: clearwater-sg_internal_sip
         description: Internal SIP signalling
@@ -378,7 +390,7 @@ node_templates:
 
   sprout_security_group:
     type: cloudify.openstack.nodes.SecurityGroup
-    properties: 
+    properties:
       security_group:
         name: clearwater-sg_sprout
         description: memcached Chronos 0MQ
@@ -406,7 +418,7 @@ node_templates:
 
   ralf_security_group:
     type: cloudify.openstack.nodes.SecurityGroup
-    properties: 
+    properties:
       security_group:
         name: clearwater-sg_ralf
         description: memcached Chronos REST
@@ -423,7 +435,7 @@ node_templates:
 
   homestead_security_group:
     type: cloudify.openstack.nodes.SecurityGroup
-    properties: 
+    properties:
       security_group:
         name: clearwater-sg_homestead
         description: REST Cassandra 0MQ
@@ -443,7 +455,7 @@ node_templates:
 
   homer_security_group:
     type: cloudify.openstack.nodes.SecurityGroup
-    properties: 
+    properties:
       security_group:
         name: clearwater-sg_homer
         description: REST Cassandra 0MQ
@@ -459,7 +471,7 @@ node_templates:
 
   ellis_security_group:
     type: cloudify.openstack.nodes.SecurityGroup
-    properties: 
+    properties:
       security_group:
         name: clearwater-sg_ellis
         description: Web UI
@@ -473,7 +485,7 @@ node_templates:
 
   bind_security_group:
     type: cloudify.openstack.nodes.SecurityGroup
-    properties: 
+    properties:
       security_group:
         name: clearwater-sg_bind
         description: DNS
@@ -487,7 +499,7 @@ node_templates:
 
 
 
-  # Declare floating IP for bono, bind and ellis nodes 
+  # Declare floating IP for bono, bind and ellis nodes
   bono_floatingip:
     type: cloudify.openstack.nodes.FloatingIP
     properties:
@@ -508,7 +520,7 @@ node_templates:
 
 
   # Declare scaling policies for clearwater nodes
-  
+
 groups:
   clearwater_hosts:
     members: [sprout_host]
@@ -529,8 +541,8 @@ groups:
                 delta: 1
                 scale_compute: true
                 max_instances: 5
-                
-                
+
+
       down_scale_policy:
         type: cloudify.policies.types.threshold
         properties:
@@ -548,7 +560,7 @@ groups:
                 scale_compute: true
                 min_instances: 1
                 delta: -1
-                
+
 
 outputs:
   dns_ip:

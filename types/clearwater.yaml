@@ -1,5 +1,5 @@
 #######################################################################
-# 
+#
 #   Copyright (c) 2015 Orange
 #   valentin.boucher@orange.com
 #
@@ -16,6 +16,9 @@ node_types:
     properties:
       private_domain:
         description: Private domain for clearwater internal load-balancing
+        type: string
+      release:
+        description: Release number of clearwater
         type: string
     interfaces:
       cloudify.interfaces.lifecycle:
@@ -133,8 +136,3 @@ relationships:
                 1.2.826.0.1.1578918.9.2.4.1.2.1: bono.Incoming.Requests.Count
                 1.2.826.0.1.1578918.9.2.5.1.2.1: bono.Rejected.Overload.Count
                 1.2.826.0.1.1578918.9.2.6.1.2.1: bono.Queue.Size.Average
-
-
-
-
-

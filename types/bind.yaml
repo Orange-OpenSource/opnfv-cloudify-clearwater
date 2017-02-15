@@ -1,5 +1,5 @@
 #######################################################################
-# 
+#
 #   Copyright (c) 2015 Orange
 #   valentin.boucher@orange.com
 #
@@ -36,9 +36,12 @@ node_types:
       hss_port:
         type: string
         default: '3868'
+      release:
+        description: Release number of clearwater
+        type: string
     interfaces:
       cloudify.interfaces.lifecycle:
-        create:           
+        create:
           implementation: scripts/bind/bind.py
           inputs:
             invocation:
