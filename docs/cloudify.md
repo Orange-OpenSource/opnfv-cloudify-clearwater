@@ -31,7 +31,7 @@ virtualenv cloudify
 source cloudify/bin/activate
 cd cloudify
 ```
-Install cloudify CLI version 3.2 with the PIP command : 
+Install cloudify CLI version 3.4 with the PIP command : 
 ```
 pip install cloudify==3.4
 ```
