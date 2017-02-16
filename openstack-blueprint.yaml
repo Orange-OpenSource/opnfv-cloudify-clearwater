@@ -102,7 +102,7 @@ node_templates:
     capabilities:
       scalable:
         properties:
-          default_instances: 3
+          default_instances: 2
           min_instances: 1
     relationships:
       - target: base_security_group
