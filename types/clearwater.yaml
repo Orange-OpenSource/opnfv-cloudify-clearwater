@@ -28,6 +28,7 @@ node_types:
             invocation:
               default:
                 function: configure
+        upgrade: scripts/clearwater/other/upgrade.sh
 
   # Specific types for clearwater nodes (install role etc.)
   clearwater.nodes.sprout:

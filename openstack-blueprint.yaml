@@ -19,6 +19,7 @@ imports:
   - http://www.getcloudify.org/spec/cloudify/3.4/types.yaml
   - http://www.getcloudify.org/spec/openstack-plugin/1.4/plugin.yaml
   - http://www.getcloudify.org/spec/diamond-plugin/1.3.3/plugin.yaml
+  - https://raw.githubusercontent.com/boucherv-orange/update-vnf/master/plugin.yaml
   - types/monitoring.yaml
   - types/clearwater.yaml
   - types/bind.yaml
@@ -518,7 +519,31 @@ node_templates:
       floatingip:
         floating_network_name: { get_input: external_network_name }
 
-
+workflows:
+  upgrade-vnf:
+    mapping: update-workflow.update.run_operation
+    parameters:
+      operation:
+        description: the operation to execute
+      nodes_types_list:
+        description: List of nodes that need to be updated/upgraded
+        default:
+          - clearwater.nodes.ralf
+          - clearwater.nodes.homestead
+          - clearwater.nodes.homer
+          - clearwater.nodes.sprout
+          - clearwater.nodes.bono
+          - clearwater.nodes.ellis
+      nodes_types_dependency:
+        description: Add dependency between nodes types update task
+        default: true
+      relations_unlink:
+        description: Target name of the relationships to be broken during the update
+        default:
+          - bind
+      operation_kwargs:
+        description: the operation kwargs
+        default: {}
 
 outputs:
   dns_ip:
