@@ -22,4 +22,4 @@ sudo apt-get update -o Dir::Etc::sourcelist="sources.list.d/clearwater.list" -o 
 
 sudo apt-get install clearwater-infrastructure
 
-sudo clearwater-upgrade
+sudo clearwater-upgrade -y
