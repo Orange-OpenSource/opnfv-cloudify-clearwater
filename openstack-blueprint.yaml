@@ -49,7 +49,7 @@ inputs:
 
   release:
     type: string
-    default: repo107
+    default: repo108
     description: Clearwater release
 
 node_types:
