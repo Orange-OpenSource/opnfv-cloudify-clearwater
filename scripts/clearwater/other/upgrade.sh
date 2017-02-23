@@ -8,6 +8,8 @@ if [ -f /etc/apt/sources.list.d/clearwater.list ]
     sudo rm /etc/apt/sources.list.d/clearwater.list
 fi
 
+release=$(ctx node properties release)
+
 if [ $release = "stable" ]
 then
   echo 'deb http://repo.cw-ngv.com/stable binary/' | sudo tee --append /etc/apt/sources.list.d/clearwater.list
