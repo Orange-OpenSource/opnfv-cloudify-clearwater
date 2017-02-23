@@ -520,7 +520,7 @@ node_templates:
         floating_network_name: { get_input: external_network_name }
 
 workflows:
-  upgrade-clearwater:
+  upgrade-all-clearwater:
     mapping: update-workflow.update.run_operation
     parameters:
       operation:

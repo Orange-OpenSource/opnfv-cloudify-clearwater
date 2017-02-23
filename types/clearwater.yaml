@@ -36,6 +36,7 @@ node_types:
     interfaces:
       cloudify.interfaces.lifecycle:
         configure: scripts/clearwater/sprout/install-sprout.sh
+        start: scripts/clearwater/sprout/start-sprout.sh
         stop: scripts/clearwater/sprout/stop-sprout.sh
         delete: scripts/clearwater/other/remove-cluster-node.sh
 
@@ -44,6 +45,7 @@ node_types:
     interfaces:
       cloudify.interfaces.lifecycle:
         configure: scripts/clearwater/bono/install-bono.sh
+        start: scripts/clearwater/bono/start-bono.sh
         stop: scripts/clearwater/bono/stop-bono.sh
         delete: scripts/clearwater/other/remove-cluster-node.sh
 
@@ -52,6 +54,7 @@ node_types:
     interfaces:
       cloudify.interfaces.lifecycle:
         configure: scripts/clearwater/homestead/install-homestead.sh
+        start: scripts/clearwater/homestead/start-homestead.sh
         stop: scripts/clearwater/homestead/stop-homestead.sh
         delete: scripts/clearwater/other/remove-cluster-node.sh
 
@@ -60,6 +63,7 @@ node_types:
     interfaces:
       cloudify.interfaces.lifecycle:
         configure: scripts/clearwater/homer/install-homer.sh
+        start: scripts/clearwater/homer/start-homer.sh
         stop: scripts/clearwater/homer/stop-homer.sh
         delete: scripts/clearwater/other/remove-cluster-node.sh
 
@@ -68,6 +72,7 @@ node_types:
     interfaces:
       cloudify.interfaces.lifecycle:
         configure: scripts/clearwater/ralf/install-ralf.sh
+        start: scripts/clearwater/ralf/start-ralf.sh
         stop: scripts/clearwater/ralf/stop-ralf.sh
         delete: scripts/clearwater/other/remove-cluster-node.sh
 
@@ -76,6 +81,7 @@ node_types:
     interfaces:
       cloudify.interfaces.lifecycle:
         configure: scripts/clearwater/ellis/install-ellis.sh
+        start: scripts/clearwater/ellis/start-ellis.sh
         stop: scripts/clearwater/ellis/stop-ellis.sh
         delete: scripts/clearwater/other/remove-cluster-node.sh
 
