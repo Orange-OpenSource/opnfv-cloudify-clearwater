@@ -103,8 +103,7 @@ node_templates:
     capabilities:
       scalable:
         properties:
-          default_instances: 2
-          min_instances: 1
+          min_instances: 2
     relationships:
       - target: base_security_group
         type: cloudify.openstack.server_connected_to_security_group
@@ -117,10 +116,6 @@ node_templates:
 
   bono_host:
     type: clearwater.nodes.MonitoredServer
-    capabilities:
-      scalable:
-        properties:
-          min_instances: 1
     relationships:
       - target: bono_floatingip
         type: cloudify.openstack.server_connected_to_floating_ip
@@ -156,7 +151,7 @@ node_templates:
     capabilities:
       scalable:
         properties:
-          min_instances: 1
+          min_instances: 2
     relationships:
       - target: base_security_group
         type: cloudify.openstack.server_connected_to_security_group
@@ -182,7 +177,7 @@ node_templates:
     capabilities:
       scalable:
         properties:
-          min_instances: 1
+          min_instances: 2
     relationships:
       - target: base_security_group
         type: cloudify.openstack.server_connected_to_security_group
@@ -518,6 +513,17 @@ node_templates:
     properties:
       floatingip:
         floating_network_name: { get_input: external_network_name }
+
+groups:
+  bono_group:
+    members: [bono_host, bono_floatingip]
+
+policies:
+  scale_bono:
+    type: cloudify.policies.scaling
+    properties:
+      default_instances: 2
+    targets: [bono_group]
 
 workflows:
   upgrade-all-clearwater:
