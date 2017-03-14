@@ -1,4 +1,4 @@
-#!/bin/bash -e
+#!/bin/bash 
 
 ctx logger info "Stopping sprout node"
 
