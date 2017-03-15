@@ -8,14 +8,14 @@ function wait_for_service() {
 
   ctx logger info "Running liveness detection on port ${port}"
 
-  for i in $(seq 1 120)
+  for i in $(seq 1 24)
   do
     if [ echo >/dev/tcp/${ip}/${port} ]; then
         started=true
         break
     else
-        ctx logger info "Service on port ${port} has not started. waiting..."
-        sleep 1
+        ctx logger debug "Service on port ${port} has not started. waiting..."
+        sleep 10
     fi
   done
   if [ ${started} = false ]; then
@@ -32,8 +32,10 @@ sudo service sprout start
 
 sudo monit monitor -g sprout
 
+set +e
 sudo monit monitor clearwater_cluster_manager
 sudo monit monitor clearwater_config_manager
 sudo monit monitor -g etcd
+set -e
 
-wait_for_service local_ip 5054
+wait_for_service ${local_ip} 5054
