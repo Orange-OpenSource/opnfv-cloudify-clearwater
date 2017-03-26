@@ -276,6 +276,15 @@ node_templates:
         - remote_ip_prefix: 0.0.0.0/0
           port: 161
           protocol: udp
+        - protocol: tcp
+          port_range_min: 1
+          port_range_max: 65535
+          remote_ip_prefix: 0.0.0.0/0
+        - protocol: udp
+          port_range_min: 1
+          port_range_max: 65535
+          remote_ip_prefix: 0.0.0.0/0
+
 
   bono_security_group:
     type: cloudify.openstack.nodes.SecurityGroup
