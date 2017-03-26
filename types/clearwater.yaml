@@ -72,6 +72,7 @@ node_types:
     interfaces:
       cloudify.interfaces.lifecycle:
         configure: scripts/clearwater/ellis/install-ellis.sh
+        start: scripts/clearwater/ellis/stop-start.sh
         stop: scripts/clearwater/ellis/stop-ellis.sh
         delete: scripts/clearwater/other/remove-cluster-node.sh
 
