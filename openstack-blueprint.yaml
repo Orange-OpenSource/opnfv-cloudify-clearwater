@@ -172,7 +172,7 @@ node_templates:
       install_agent: true
       ip: '127.0.0.1'
       cloudify_agent:
-        user: cloud
+        user: centos
         key: ~/my.key
 
   clearwater_mgmt_container:
