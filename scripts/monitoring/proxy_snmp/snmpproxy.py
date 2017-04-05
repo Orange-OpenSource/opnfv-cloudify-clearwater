@@ -22,13 +22,17 @@ class SNMPProxyCollector(SNMPRawCollector):
             return
         
         if oid not in data:
-            if "SNMPv2-SMI::iso" + oid.split('.', 1)[1] not in data:
+            formated_oid = "SNMPv2-SMI::iso." + oid.split('.', 1)[1]
+            if formated_oid not in data:
                 # oid is not even in hierarchy, happens when using 9.9.9.9
                 # but not when using 1.9.9.9
                 self._skip(device, oid, 'no object at OID (#1)')
                 return
+            else:
+                value = data[formated_oid]
+        else:
+             value = data[oid]
 
-        value = data[oid]
         if value == 'No Such Object currently exists at this OID':
             self._skip(device, oid, 'no object at OID (#2)')
             return
