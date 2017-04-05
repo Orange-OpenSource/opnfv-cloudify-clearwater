@@ -96,68 +96,21 @@ relationships:
             oids:
               description: snmp oids to poll
               default:
-                1.2.826.0.1.1578918.9.3.1.1.2.1: sproutLatencyAverage.scopePrevious5SecondPeriod
-                1.2.826.0.1.1578918.9.3.1.1.2.2: sproutLatencyAverage.scopeCurrent5MinutePeriod
-                1.2.826.0.1.1578918.9.3.1.1.2.3: sproutLatencyAverage.scopePrevious5MinutePeriod
-                1.2.826.0.1.1578918.9.3.1.1.3.1: sproutLatencyVariance.scopePrevious5SecondPeriod
-                1.2.826.0.1.1578918.9.3.1.1.3.2: sproutLatencyVariance.scopeCurrent5MinutePeriod
-                1.2.826.0.1.1578918.9.3.1.1.3.3: sproutLatencyVariance.scopePrevious5MinutePeriod
-                1.2.826.0.1.1578918.9.3.1.1.4.1: sproutLatencyHWM.scopePrevious5SecondPeriod
-                1.2.826.0.1.1578918.9.3.1.1.4.2: sproutLatencyHWM.scopeCurrent5MinutePeriod
-                1.2.826.0.1.1578918.9.3.1.1.4.3: sproutLatencyHWM.scopePrevious5MinutePeriod
-                1.2.826.0.1.1578918.9.3.1.1.5.1: sproutLatencyLWM.scopePrevious5SecondPeriod
-                1.2.826.0.1.1578918.9.3.1.1.5.2: sproutLatencyLWM.scopeCurrent5MinutePeriod
-                1.2.826.0.1.1578918.9.3.1.1.5.3: sproutLatencyLWM.scopePrevious5MinutePeriod
-                1.2.826.0.1.1578918.9.3.1.1.6.1: sproutLatencyCount.scopePrevious5SecondPeriod
-                1.2.826.0.1.1578918.9.3.1.1.6.2: sproutLatencyCount.scopeCurrent5MinutePeriod
-                1.2.826.0.1.1578918.9.3.1.1.6.3: sproutLatencyCount.scopePrevious5MinutePeriod
-                1.2.826.0.1.1578918.9.3.2.2.1.6.1: sproutHomerLatencyCount.scopePrevious5SecondPeriod
-                1.2.826.0.1.1578918.9.3.2.2.1.6.2: sproutHomerLatencyCount.scopeCurrent5MinutePeriod
-                1.2.826.0.1.1578918.9.3.2.2.1.6.3: sproutHomerLatencyCount.scopePrevious5MinutePeriod
-                1.2.826.0.1.1578918.9.3.6.1.2.1: sproutIncomingRequestsCount.scopePrevious5SecondPeriod
-                1.2.826.0.1.1578918.9.3.6.1.2.2: sproutIncomingRequestsCount.scopeCurrent5MinutePeriod
-                1.2.826.0.1.1578918.9.3.6.1.2.3: sproutIncomingRequestsCount.scopePrevious5MinutePeriod
-                1.2.826.0.1.1578918.9.3.7.1.2.1: sproutRejectedOverloadCount.scopePrevious5SecondPeriod
-                1.2.826.0.1.1578918.9.3.7.1.2.2: sproutRejectedOverloadCount.scopeCurrent5MinutePeriod
-                1.2.826.0.1.1578918.9.3.7.1.2.3: sproutRejectedOverloadCount.scopePrevious5MinutePeriod
-                1.2.826.0.1.1578918.9.3.8.1.2.1: sproutQueueSizeAverage.scopePrevious5SecondPeriod
-                1.2.826.0.1.1578918.9.3.8.1.2.2: sproutQueueSizeAverage.scopeCurrent5MinutePeriod
-                1.2.826.0.1.1578918.9.3.8.1.2.3: sproutQueueSizeAverage.scopePrevious5MinutePeriod
-                1.2.826.0.1.1578918.9.3.9.1.2.1: sproutInitialRegistrationAttempts.scopePrevious5SecondPeriod
-                1.2.826.0.1.1578918.9.3.9.1.2.2: sproutInitialRegistrationAttempts.scopeCurrent5MinutePeriod
-                1.2.826.0.1.1578918.9.3.9.1.2.3: sproutInitialRegistrationAttempts.scopePrevious5MinutePeriod
-                1.2.826.0.1.1578918.9.3.9.1.3.1: sproutInitialRegistrationSuccesses.scopePrevious5SecondPeriod
-                1.2.826.0.1.1578918.9.3.9.1.3.2: sproutInitialRegistrationSuccesses.scopeCurrent5MinutePeriod
-                1.2.826.0.1.1578918.9.3.9.1.3.3: sproutInitialRegistrationSuccesses.scopePrevious5MinutePeriod
-                1.2.826.0.1.1578918.9.3.9.1.4.1: sproutInitialRegistrationFailures.scopePrevious5SecondPeriod
-                1.2.826.0.1.1578918.9.3.9.1.4.2: sproutInitialRegistrationFailures.scopeCurrent5MinutePeriod
-                1.2.826.0.1.1578918.9.3.9.1.4.3: sproutInitialRegistrationFailures.scopePrevious5MinutePeriod
-                1.2.826.0.1.1578918.9.3.9.1.5.1: sproutInitialRegistrationSuccessPercent.scopePrevious5SecondPeriod
-                1.2.826.0.1.1578918.9.3.9.1.5.2: sproutInitialRegistrationSuccessPercent.scopeCurrent5MinutePeriod
-                1.2.826.0.1.1578918.9.3.9.1.5.3: sproutInitialRegistrationSuccessPercent.scopePrevious5MinutePeriod
-                1.2.826.0.1.1578918.9.3.10.1.2.1: sproutReRegistrationAttempts.scopePrevious5SecondPeriod
-                1.2.826.0.1.1578918.9.3.10.1.2.2: sproutReRegistrationAttempts.scopeCurrent5MinutePeriod
-                1.2.826.0.1.1578918.9.3.10.1.2.3: sproutReRegistrationAttempts.scopePrevious5MinutePeriod
-                1.2.826.0.1.1578918.9.3.10.1.3.1: sproutReRegistrationSuccess.scopePrevious5SecondPeriod
-                1.2.826.0.1.1578918.9.3.10.1.3.2: sproutReRegistrationSuccess.scopeCurrent5MinutePeriod
-                1.2.826.0.1.1578918.9.3.10.1.3.3: sproutReRegistrationSuccess.scopePrevious5MinutePeriod
-                1.2.826.0.1.1578918.9.3.10.1.4.1: sproutReRegistrationFailures.scopePrevious5SecondPeriod
-                1.2.826.0.1.1578918.9.3.10.1.4.2: sproutReRegistrationFailures.scopeCurrent5MinutePeriod
-                1.2.826.0.1.1578918.9.3.10.1.4.3: sproutReRegistrationFailures.scopePrevious5MinutePeriod
-                1.2.826.0.1.1578918.9.3.11.1.2.1: sproutDeRegistrationAttempts.scopePrevious5SecondPeriod
-                1.2.826.0.1.1578918.9.3.11.1.2.2: sproutDeRegistrationAttempts.scopeCurrent5MinutePeriod
-                1.2.826.0.1.1578918.9.3.11.1.2.3: sproutDeRegistrationAttempts.scopePrevious5MinutePeriod
-                1.2.826.0.1.1578918.9.3.11.1.3.1: sproutDeRegistrationSuccess.scopePrevious5SecondPeriod
-                1.2.826.0.1.1578918.9.3.11.1.3.2: sproutDeRegistrationSuccess.scopeCurrent5MinutePeriod
-                1.2.826.0.1.1578918.9.3.11.1.3.3: sproutDeRegistrationSuccess.scopePrevious5MinutePeriod
-                1.2.826.0.1.1578918.9.3.11.1.4.1: sproutDeRegistrationFailures.scopePrevious5SecondPeriod
-                1.2.826.0.1.1578918.9.3.11.1.4.2: sproutDeRegistrationFailures.scopeCurrent5MinutePeriod
-                1.2.826.0.1.1578918.9.3.11.1.4.3: sproutDeRegistrationFailures.scopePrevious5MinutePeriod
-                1.2.826.0.1.1578918.9.3.28.0: sproutSmoothedLatencyValue
-                1.2.826.0.1.1578918.9.3.29.0: sproutTargetLatencyValue
-                1.2.826.0.1.1578918.9.3.30.0: sproutPenaltiesValue
-                1.2.826.0.1.1578918.9.3.31.0: sproutPRRCurrentValue
-                1.2.826.0.1.1578918.9.3.31.0: sproutPRRCurrentValue
+                1.2.826.0.1.1578918.9.3.1.1.2: sprout.Latency.Average
+                1.2.826.0.1.1578918.9.3.2.1.1.3.1: sprout.Homer.Connection.Count
+                1.2.826.0.1.1578918.9.3.3.1.1.3.1: sprout.Homestead.Connection.Count
+                1.2.826.0.1.1578918.9.3.6.1.2.1: sprout.Incoming.Requests.Count
+                1.2.826.0.1.1578918.9.3.7.1.2.1: sprout.Rejected.Overload.Count
+                1.2.826.0.1.1578918.9.3.8.1.2: sprout.Queue.Size.Average
+                1.2.826.0.1.1578918.9.3.9.1.2.1: sprout.Initial.Registration.Attempts
+                1.2.826.0.1.1578918.9.3.9.1.3.1: sprout.Initial.Registration.Successes
+                1.2.826.0.1.1578918.9.3.9.1.4.1: sprout.Initial.Registration.Failures
+                1.2.826.0.1.1578918.9.3.10.1.2.1: sprout.Re.Registration.Attempts
+                1.2.826.0.1.1578918.9.3.10.1.3.1: sprout.Re.Registration.Successes
+                1.2.826.0.1.1578918.9.3.10.1.4.1: sprout.Re.Registration.Failures
+                1.2.826.0.1.1578918.9.3.11.1.2.1: sprout.De.Registration.Attempts
+                1.2.826.0.1.1578918.9.3.11.1.3.1: sprout.De.Registration.Successes
+                1.2.826.0.1.1578918.9.3.11.1.4.1: sprout.De.Registration.Failures
   monitors_bono_nodes:
     derived_from: cloudify.relationships.monitors
     target_interfaces:
@@ -175,43 +128,12 @@ relationships:
             oids:
               description: snmp oids to poll
               default:
-                1.2.826.0.1.1578918.9.2.1.0: bonoConnectedClients
-                1.2.826.0.1.1578918.9.2.2.1.2.1: bonoLatencyAverage.scopePrevious5SecondPeriod
-                1.2.826.0.1.1578918.9.2.2.1.2.2: bonoLatencyAverage.scopeCurrent5MinutePeriod
-                1.2.826.0.1.1578918.9.2.2.1.2.3: bonoLatencyAverage.scopePrevious5MinutePeriod
-                1.2.826.0.1.1578918.9.2.2.1.3.1: bonoLatencyVariance.scopePrevious5SecondPeriod
-                1.2.826.0.1.1578918.9.2.2.1.3.2: bonoLatencyVariance.scopeCurrent5MinutePeriod
-                1.2.826.0.1.1578918.9.2.2.1.3.3: bonoLatencyVariance.scopePrevious5MinutePeriod
-                1.2.826.0.1.1578918.9.2.2.1.4.1: bonoLatencyHWM.scopePrevious5SecondPeriod
-                1.2.826.0.1.1578918.9.2.2.1.4.2: bonoLatencyHWM.scopeCurrent5MinutePeriod
-                1.2.826.0.1.1578918.9.2.2.1.4.3: bonoLatencyHWM.scopePrevious5MinutePeriod
-                1.2.826.0.1.1578918.9.2.2.1.5.1: bonoLatencyLWM.scopePrevious5SecondPeriod
-                1.2.826.0.1.1578918.9.2.2.1.5.2: bonoLatencyLWM.scopeCurrent5MinutePeriod
-                1.2.826.0.1.1578918.9.2.2.1.5.3: bonoLatencyLWM.scopePrevious5MinutePeriod
-                1.2.826.0.1.1578918.9.2.2.1.6.1: bonoLatencyCount.scopePrevious5SecondPeriod
-                1.2.826.0.1.1578918.9.2.2.1.6.2: bonoLatencyCount.scopeCurrent5MinutePeriod
-                1.2.826.0.1.1578918.9.2.2.1.6.3: bonoLatencyCount.scopePrevious5MinutePeriod
-                1.2.826.0.1.1578918.9.2.4.1.2.1: bonoIncomingRequestsCount.scopePrevious5SecondPeriod
-                1.2.826.0.1.1578918.9.2.4.1.2.2: bonoIncomingRequestsCount.scopeCurrent5MinutePeriod
-                1.2.826.0.1.1578918.9.2.4.1.2.3: bonoIncomingRequestsCount.scopePrevious5MinutePeriod
-                1.2.826.0.1.1578918.9.2.5.1.2.1: bonoRejectedOverloadCount.scopePrevious5SecondPeriod
-                1.2.826.0.1.1578918.9.2.5.1.2.2: bonoRejectedOverloadCount.scopeCurrent5MinutePeriod
-                1.2.826.0.1.1578918.9.2.5.1.2.3: bonoRejectedOverloadCount.scopePrevious5MinutePeriod
-                1.2.826.0.1.1578918.9.2.6.1.2.1: bonoQueueSizeAverage.scopePrevious5SecondPeriod
-                1.2.826.0.1.1578918.9.2.6.1.2.2: bonoQueueSizeAverage.scopeCurrent5MinutePeriod
-                1.2.826.0.1.1578918.9.2.6.1.2.3: bonoQueueSizeAverage.scopePrevious5MinutePeriod
-                1.2.826.0.1.1578918.9.2.6.1.3.1: bonoQueueSizeVariance.scopePrevious5SecondPeriod
-                1.2.826.0.1.1578918.9.2.6.1.3.2: bonoQueueSizeVariance.scopeCurrent5MinutePeriod
-                1.2.826.0.1.1578918.9.2.6.1.3.3: bonoQueueSizeVariance.scopePrevious5MinutePeriod
-                1.2.826.0.1.1578918.9.2.6.1.4.1: bonoQueueSizeHWM.scopePrevious5SecondPeriod
-                1.2.826.0.1.1578918.9.2.6.1.4.2: bonoQueueSizeHWM.scopeCurrent5MinutePeriod
-                1.2.826.0.1.1578918.9.2.6.1.4.3: bonoQueueSizeHWM.scopePrevious5MinutePeriod
-                1.2.826.0.1.1578918.9.2.6.1.5.1: bonoQueueSizeLWM.scopePrevious5SecondPeriod
-                1.2.826.0.1.1578918.9.2.6.1.5.2: bonoQueueSizeLWM.scopeCurrent5MinutePeriod
-                1.2.826.0.1.1578918.9.2.6.1.5.3: bonoQueueSizeLWM.scopePrevious5MinutePeriod
-                1.2.826.0.1.1578918.9.2.6.1.6.1: bonoQueueSizeCount.scopePrevious5SecondPeriod
-                1.2.826.0.1.1578918.9.2.6.1.6.2: bonoQueueSizeCount.scopeCurrent5MinutePeriod
-                1.2.826.0.1.1578918.9.2.6.1.6.3: bonoQueueSizeCount.scopePrevious5MinutePeriod
+                1.2.826.0.1.1578918.9.2.1: bono.Connected.Clients
+                1.2.826.0.1.1578918.9.2.2.1.2.1: bono.Latency.Average
+                1.2.826.0.1.1578918.9.2.3.1.1.3.1: bono.Sprout.Connection.Count
+                1.2.826.0.1.1578918.9.2.4.1.2.1: bono.Incoming.Requests.Count
+                1.2.826.0.1.1578918.9.2.5.1.2.1: bono.Rejected.Overload.Count
+                1.2.826.0.1.1578918.9.2.6.1.2.1: bono.Queue.Size.Average
 
 
 
