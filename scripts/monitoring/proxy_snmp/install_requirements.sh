@@ -1,3 +1,5 @@
 #!/bin/bash
 
-pip install pysnmp==4.2.5
+sudo apt update
+sudo apt install gcc -y
+pip install pysnmp==4.3.5
