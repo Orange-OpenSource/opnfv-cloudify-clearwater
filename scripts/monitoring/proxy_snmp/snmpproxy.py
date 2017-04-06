@@ -7,6 +7,40 @@ from diamond.metric import Metric
 
 
 class SNMPProxyCollector(SNMPRawCollector):
+    def _get_value(self, device, oid, host, port, community):
+        data = self.get(oid, host, port, community)
+
+        if data is None:
+            self._skip(device, oid, 'device down (#1)')
+            return
+
+        self.log.debug('Data received from GET \'{0}\': [{1}]'.format(
+            device, data))
+
+        if len(data) == 0:
+            self._skip(device, oid, 'empty response, device down?')
+            return
+        
+        if oid not in data:
+            formated_oid = "SNMPv2-SMI::iso." + oid.split('.', 1)[1]
+            if formated_oid not in data:
+                # oid is not even in hierarchy, happens when using 9.9.9.9
+                # but not when using 1.9.9.9
+                self._skip(device, oid, 'no object at OID (#1)')
+                return
+            else:
+                value = data[formated_oid]
+        else:
+             value = data[oid]
+
+        if value == 'No Such Object currently exists at this OID':
+            self._skip(device, oid, 'no object at OID (#2)')
+            return
+
+        if value == 'No Such Instance currently exists at this OID':
+            return self._get_value_walk(device, oid, host, port, community)
+
+        return value
 
     def collect_snmp(self, device, host, port, community):
         """
