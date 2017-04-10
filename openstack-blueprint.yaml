@@ -528,7 +528,7 @@ policies:
     type: cloudify.policies.scaling
     properties:
       default_instances: 2
-      targets: [bono_group]
+    targets: [bono_group]
 
 outputs:
   dns_ip:
