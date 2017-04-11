@@ -3,8 +3,8 @@ from cloudify import exceptions
 import diamond_agent.tasks as diamond
 
 import os
-
-paths = diamond.get_paths(ctx.plugin.workdir)
+workdir = ctx.plugin.workdir
+paths = diamond.get_paths(workdir.replace("script","diamond"))
 name = 'SNMPProxyCollector'
 
 collector_dir = os.path.join(paths['collectors'], name)
