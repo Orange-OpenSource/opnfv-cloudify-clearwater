@@ -3,8 +3,8 @@ from cloudify import exceptions
 import diamond_agent.tasks as diamond
 
 import os
-
-paths = diamond.get_paths(None)
+workdir = ctx.plugin.workdir
+paths = diamond.get_paths(workdir.replace("script","diamond"))
 name = 'SNMPProxyCollector'
 
 collector_dir = os.path.join(paths['collectors'], name)
@@ -32,4 +32,4 @@ try:
 	diamond.start_diamond(paths['config'])
 except:
 	exceptions.RecoverableError("Failed to start diamond", 30)
-	pass
+pass
