@@ -4,8 +4,7 @@ import diamond_agent.tasks as diamond
 
 import os
 
-_ctx = diamond.get_host_ctx(ctx)
-paths = _ctx.runtime_properties['diamond_paths']
+paths = diamond.get_paths(ctx.plugin.workdir)
 name = 'SNMPProxyCollector'
 
 collector_dir = os.path.join(paths['collectors'], name)
