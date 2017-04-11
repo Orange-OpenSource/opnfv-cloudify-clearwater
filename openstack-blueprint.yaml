@@ -523,6 +523,13 @@ groups:
   bono_group:
     members: [bono_host, bono_floatingip]
 
+policies:
+  scale_bono:
+    type: cloudify.policies.scaling
+    properties:
+      default_instances: 2
+    targets: [bono_group]
+
 outputs:
   dns_ip:
     value: { get_attribute: [bind_floatingip, floating_ip_address] }
