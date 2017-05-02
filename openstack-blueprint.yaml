@@ -138,6 +138,8 @@ node_types:
         default: { get_input: dns_ips }
       etcd_ip:
         default: { get_input: etcd_ip }
+      release:
+        default: { get_input: release }
 
 relationships:
   cw_base_connected_to_DNS:
