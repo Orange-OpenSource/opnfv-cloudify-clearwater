@@ -73,6 +73,11 @@ inputs:
     type: string
     description: ip of etcd cluster
 
+  with_ellis:
+    type: integer
+    description: 1 for true 0 for false
+    default: 1
+
 node_types:
 
   # Global types for VMs
@@ -263,8 +268,8 @@ node_templates:
     capabilities:
       scalable:
         properties:
-          min_instances: 1
-          max_instances: 1
+          min_instances: { get_input: with_ellis }
+          max_instances: { get_input: with_ellis }
     relationships:
       - target: ellis_floatingip
         type: cloudify.openstack.server_connected_to_floating_ip
