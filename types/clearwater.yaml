@@ -1,5 +1,5 @@
 #######################################################################
-# 
+#
 #   Copyright (c) 2015 Orange
 #   valentin.boucher@orange.com
 #
@@ -13,6 +13,13 @@ node_types:
   # Global type for clearwater nodes (create local_config file)
   clearwater.nodes.base.config:
     derived_from: cloudify.nodes.SoftwareComponent
+    properties:
+      private_domain:
+        description: Private domain for clearwater internal load-balancing
+        type: string
+      release:
+        description: Release number of clearwater
+        type: string
     interfaces:
       cloudify.interfaces.lifecycle:
         create:
@@ -21,6 +28,7 @@ node_types:
             invocation:
               default:
                 function: configure
+        upgrade: scripts/clearwater/other/upgrade.sh
 
   # Specific types for clearwater nodes (install role etc.)
   clearwater.nodes.sprout:
@@ -28,6 +36,7 @@ node_types:
     interfaces:
       cloudify.interfaces.lifecycle:
         configure: scripts/clearwater/sprout/install-sprout.sh
+        start: scripts/clearwater/sprout/start-sprout.sh
         stop: scripts/clearwater/sprout/stop-sprout.sh
         delete: scripts/clearwater/other/remove-cluster-node.sh
 
@@ -36,6 +45,7 @@ node_types:
     interfaces:
       cloudify.interfaces.lifecycle:
         configure: scripts/clearwater/bono/install-bono.sh
+        start: scripts/clearwater/bono/start-bono.sh
         stop: scripts/clearwater/bono/stop-bono.sh
         delete: scripts/clearwater/other/remove-cluster-node.sh
 
@@ -44,6 +54,7 @@ node_types:
     interfaces:
       cloudify.interfaces.lifecycle:
         configure: scripts/clearwater/homestead/install-homestead.sh
+        start: scripts/clearwater/homestead/start-homestead.sh
         stop: scripts/clearwater/homestead/stop-homestead.sh
         delete: scripts/clearwater/other/remove-cluster-node.sh
 
@@ -52,6 +63,7 @@ node_types:
     interfaces:
       cloudify.interfaces.lifecycle:
         configure: scripts/clearwater/homer/install-homer.sh
+        start: scripts/clearwater/homer/start-homer.sh
         stop: scripts/clearwater/homer/stop-homer.sh
         delete: scripts/clearwater/other/remove-cluster-node.sh
 
@@ -60,6 +72,7 @@ node_types:
     interfaces:
       cloudify.interfaces.lifecycle:
         configure: scripts/clearwater/ralf/install-ralf.sh
+        start: scripts/clearwater/ralf/start-ralf.sh
         stop: scripts/clearwater/ralf/stop-ralf.sh
         delete: scripts/clearwater/other/remove-cluster-node.sh
 
@@ -68,6 +81,7 @@ node_types:
     interfaces:
       cloudify.interfaces.lifecycle:
         configure: scripts/clearwater/ellis/install-ellis.sh
+        start: scripts/clearwater/ellis/start-ellis.sh
         stop: scripts/clearwater/ellis/stop-ellis.sh
         delete: scripts/clearwater/other/remove-cluster-node.sh
 
@@ -129,6 +143,3 @@ relationships:
                 1.2.826.0.1.1578918.9.2.4.1.2.1: bono.Incoming.Requests.Count
                 1.2.826.0.1.1578918.9.2.5.1.2.1: bono.Rejected.Overload.Count
                 1.2.826.0.1.1578918.9.2.6.1.2.1: bono.Queue.Size.Average
-
-
-

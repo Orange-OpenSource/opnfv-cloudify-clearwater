@@ -23,7 +23,7 @@ Download **blueprint** :
 cd ~/cloudify/cloudify-manager/
 mkdir blueprints
 cd blueprints
-git clone -b stable https://github.com/Orange-OpenSource/opnfv-cloudify-clearwater.git
+git clone -b v1.2 https://github.com/Orange-OpenSource/opnfv-cloudify-clearwater.git
 ```
 Upload **blueprint** on the orchestrator :
 ```
@@ -83,7 +83,7 @@ But to register your softphone, you must use dns of the deployment with his publ
 
 
 ## Test
-
+### Introduction
 To **test** your deployment you can use the [clearwater-live-test](https://clearwater.readthedocs.org/en/latest/Running_the_live_tests/index.html). This test **creates numbers** on ellis and then made different calls to validate deployment. The **result** of this test appears on console during the test.
 ```
  Basic Call - Mainline (UDP) - (6505550395, 6505550898) Passed
@@ -91,6 +91,28 @@ To **test** your deployment you can use the [clearwater-live-test](https://clear
  Basic Call - Tel URIs (UDP) - (6505550493, 6505550059) Passed
  Basic Call - Unknown number (TCP) - (6505550405, 6505550862) Passed
 ```
+### Using OPNFV/Functest container 
+It's the same test but the installation of all dependancies was already done in this container. In addition, this test provide a json file of all test result.
+
+You can run Functest container in your cloudify cli VM. To do that, you must install docker into this VM :
+```
+curl -sSL https://get.docker.com/ | sh
+```
+After that, you can download OPNFV/Functest container image :
+```
+docker pull opnfv/functest
+```
+Then you can run the container :
+```
+docker run --dns=<BIND_PUBLIC_IP> -it opnfv/functest /bin/bash
+```
+Next you can launch the signaling testing of your deployment :
+```
+cd ~/repos/vnfs/vims-test
+source /etc/profile.d/rvm.sh
+rake test[<YOUR_PUBLIC_DOMAIN_NAME>] SIGNUP_CODE=secret
+```
+
 
 ## Scaling
 

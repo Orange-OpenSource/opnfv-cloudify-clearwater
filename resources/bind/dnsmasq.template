@@ -1,3 +1,0 @@
-{% for dns_ip in dns_ips %}
-nameserver	{{dns_ip}}
-{% endfor %}

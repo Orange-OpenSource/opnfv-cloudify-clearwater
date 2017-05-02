@@ -1,5 +1,5 @@
-{
-  "dashboard":      
+
+      
   {
   "id": null,
   "title": "clearwater",
@@ -1731,6 +1731,4 @@
   "refresh": "5s",
   "schemaVersion": 6,
   "version": 6
-     },
-    "overwrite": true
-}
+     }
