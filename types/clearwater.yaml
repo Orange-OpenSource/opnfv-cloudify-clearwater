@@ -11,7 +11,7 @@
 
 node_types:
   # Global type for clearwater nodes (create local_config file)
-  clearwater.nodes.config:
+  clearwater.nodes.base.config:
     derived_from: cloudify.nodes.SoftwareComponent
     properties:
       private_domain:

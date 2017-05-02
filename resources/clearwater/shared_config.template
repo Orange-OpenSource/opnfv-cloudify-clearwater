@@ -6,7 +6,7 @@ hs_hostname=hs.{{private_domain}}:8888
 hs_provisioning_hostname=hs.{{private_domain}}:8889
 ralf_hostname=ralf.{{private_domain}}:10888
 xdms_hostname=homer.{{private_domain}}:7888
-signaling_dns_server={{host_ip}}
+signaling_dns_server={% for dns_ip in dns_ips -%}{{dns_ip}}{% if not loop.last -%},{%- endif %}{%- endfor %}
 
 {% if (hss_hostname is defined) and (hss_hostname != '') %}
 # HSS

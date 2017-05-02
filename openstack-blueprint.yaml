@@ -1,5 +1,4 @@
 #######################################################################
-#
 #   Copyright (c) 2016 Orange
 #   valentin.boucher@orange.com
 #
@@ -20,9 +19,10 @@ imports:
   - http://www.getcloudify.org/spec/openstack-plugin/1.4/plugin.yaml
   - http://www.getcloudify.org/spec/diamond-plugin/1.3.3/plugin.yaml
   - https://raw.githubusercontent.com/boucherv-orange/update-vnf/master/plugin.yaml
+  - https://raw.githubusercontent.com/boucherv-orange/cloudify-openstack-adds-plugin/master/plugin.yaml
+  - http://www.getcloudify.org/spec/docker-plugin/1.3.1/plugin.yaml
   - types/monitoring.yaml
   - types/clearwater.yaml
-  - types/bind.yaml
 
 inputs:
 
@@ -51,6 +51,27 @@ inputs:
     type: string
     default: repo108
     description: Clearwater release
+
+  private_domain:
+    type: string
+    default: site1.clearwater.local
+    description: Sip domain for Internal communication
+
+  local_site_name:
+    type: string
+    description: Name of local site for multisite configuration
+
+  remote_site_name:
+    type: string
+    description: Name of remote site for multisite configuration
+
+  dns_ips:
+    default: []
+    description: ips of desginate api and dns server
+
+  etcd_ip:
+    type: string
+    description: ip of etcd cluster
 
 node_types:
 
@@ -95,7 +116,112 @@ node_types:
                       devices: x?vd[a-z]+[0-9]*$
                   NetworkCollector: {}
 
+  clearwater.nodes.config:
+    derived_from: clearwater.nodes.base.config
+    properties:
+      private_domain:
+        type: string
+        default: { get_input: private_domain }
+      public_domain:
+        type: string
+        default: { get_input: public_domain }
+      secret_code:
+        type: string
+        default: secret
+      local_site_name:
+        type: string
+        default: { get_input: local_site_name }
+      remote_site_name:
+        type: string
+        default: { get_input: remote_site_name }
+      dns_ips:
+        default: { get_input: dns_ips }
+      etcd_ip:
+        default: { get_input: etcd_ip }
+
+relationships:
+  cw_base_connected_to_DNS:
+    derived_from: cloudify.openstack_adds.node_connected_to_DNS
+    source_interfaces:
+      cloudify.interfaces.relationship_lifecycle:
+        establish:
+          implementation: openstack_adds.designate_plugin.recordsets.add_node
+          executor: central_deployment_agent
+          inputs:
+            domain:
+              default: { get_input: private_domain }
+            record_ip:
+              default: ""
+            other_roles:
+              default: []
+            other_records:
+              default: []
+        unlink:
+          implementation: openstack_adds.designate_plugin.recordsets.del_node
+          executor: central_deployment_agent
+          inputs:
+            domain:
+              default: { get_input: private_domain }
+            record_ip:
+              default: ""
+            other_roles:
+              default: []
+            other_records:
+              default: []
+
 node_templates:
+
+  manager_host:
+    type: cloudify.nodes.Compute
+    properties:
+      install_agent: true
+      ip: '127.0.0.1'
+      cloudify_agent:
+        user: centos
+        key: ~/my.key
+
+  clearwater_mgmt_container:
+    type: cloudify.docker.Container
+    properties:
+      name: clearwater-management
+      image:
+        repository: boucherv/clearwater-management
+    interfaces:
+      cloudify.interfaces.lifecycle:
+        create:
+          implementation: docker.docker_plugin.tasks.create_container
+          inputs:
+            params:
+              detach: true
+              stdin_open: true
+              tty: true
+              ports:
+                - 4000
+                - 2380
+              command: ./start.sh
+        start:
+          implementation: docker.docker_plugin.tasks.start
+          inputs:
+            params:
+              network_mode: host
+              port_bindings:
+                4000: 4000
+                2380: 2380
+              binds:
+                - /etc/clearwater/local_config:/etc/clearwater/local_config
+                - /etc/clearwater/shared_config:/etc/clearwater/shared_config
+    relationships:
+      - type: cloudify.relationships.contained_in
+        target: manager_host
+      - type: cloudify.relationships.connected_to
+        target: config
+
+  config:
+    type: clearwater.nodes.config
+    relationships:
+      - type: cloudify.relationships.contained_in
+        target: manager_host
+
 
   # Declare host VMs and attach them at floating ip or security group
   sprout_host:
@@ -188,25 +314,6 @@ node_templates:
       - target: homer_security_group
         type: cloudify.openstack.server_connected_to_security_group
 
-
-  bind_host:
-    type: clearwater.nodes.MonitoredServer
-    capabilities:
-      scalable:
-        properties:
-          min_instances: 1
-          max_instances: 1
-    relationships:
-      - target: base_security_group
-        type: cloudify.openstack.server_connected_to_security_group
-
-      - target: bind_security_group
-        type: cloudify.openstack.server_connected_to_security_group
-
-      - target: bind_floatingip
-        type: cloudify.openstack.server_connected_to_floating_ip
-
-
   proxy_host:
     type: cloudify.openstack.nodes.Server
     capabilities:
@@ -239,8 +346,30 @@ node_templates:
     relationships:
       - type: cloudify.relationships.contained_in
         target: sprout_host
-      - type: app_connected_to_bind
-        target: bind
+      - type: cw_base_connected_to_DNS
+        target: dns
+        source_interfaces:
+          cloudify.interfaces.relationship_lifecycle:
+            establish:
+              inputs:
+                other_roles:
+                  - icscf
+                  - scscf
+                other_records:
+                  SRV:
+                    _sip._tcp.sprout: "0 0 5054"
+                    _sip._tcp.scscf.sprout: "0 0 5054"
+                    _sip._tcp.icscf.sprout: "0 0 5052"
+            unlink:
+              inputs:
+                other_roles:
+                  - icscf
+                  - scscf
+                other_records:
+                  SRV:
+                    _sip._tcp.sprout: "0 0 5054"
+                    _sip._tcp.scscf.sprout: "0 0 5054"
+                    _sip._tcp.icscf.sprout: "0 0 5052"
       - type: monitors_sprout_nodes
         target: proxy_node
 
@@ -252,10 +381,29 @@ node_templates:
     relationships:
       - type: cloudify.relationships.contained_in
         target: bono_host
-      - type: app_connected_to_bind
-        target: bind
+      - type: cloudify.openstack_adds.node_connected_to_DNS
+        target: dns
+        source_interfaces:
+          cloudify.interfaces.relationship_lifecycle:
+            establish:
+              inputs:
+                domain: { get_input: public_domain }
+                record_ip: { get_attribute: [ bono_floatingip, floating_ip_address ]}
+                other_records:
+                  SRV:
+                    _sip._tcp: "0 0 5060"
+                    _sip._udp: "0 0 5060"
+            unlink:
+              inputs:
+                domain: { get_input: public_domain }
+                record_ip: { get_attribute: [ bono_floatingip, floating_ip_address ]}
+                other_records:
+                  SRV:
+                    _sip._tcp: "0 0 5060"
+                    _sip._udp: "0 0 5060"
       - type: monitors_bono_nodes
         target: proxy_node
+
   ellis:
     type: clearwater.nodes.ellis
     properties:
@@ -264,8 +412,18 @@ node_templates:
     relationships:
       - type: cloudify.relationships.contained_in
         target: ellis_host
-      - type: app_connected_to_bind_ellis
-        target: bind
+      - type: cloudify.openstack_adds.node_connected_to_DNS
+        target: dns
+        source_interfaces:
+          cloudify.interfaces.relationship_lifecycle:
+            establish:
+              inputs:
+                domain: { get_input: public_domain }
+                record_ip: { get_attribute: [ ellis_floatingip, floating_ip_address ]}
+            unlink:
+              inputs:
+                domain: { get_input: public_domain }
+                record_ip: { get_attribute: [ ellis_floatingip, floating_ip_address ]}
 
   ralf:
     type: clearwater.nodes.ralf
@@ -275,8 +433,8 @@ node_templates:
     relationships:
       - type: cloudify.relationships.contained_in
         target: ralf_host
-      - type: app_connected_to_bind
-        target: bind
+      - type: cw_base_connected_to_DNS
+        target: dns
 
   homestead:
     type: clearwater.nodes.homestead
@@ -286,9 +444,8 @@ node_templates:
     relationships:
       - type: cloudify.relationships.contained_in
         target: homestead_host
-      - type: app_connected_to_bind
-        target: bind
-
+      - type: cw_base_connected_to_DNS
+        target: dns
   homer:
     type: clearwater.nodes.homer
     properties:
@@ -297,19 +454,17 @@ node_templates:
     relationships:
       - type: cloudify.relationships.contained_in
         target: homer_host
-      - type: app_connected_to_bind
-        target: bind
+      - type: cw_base_connected_to_DNS
+        target: dns
 
-  bind:
-    type: clearwater.infra.bind
+  dns:
+    type: cloudify.openstack_adds.nodes.DNS_client
     properties:
-      private_domain: clearwater.local
-      release: { get_input: release }
-      public_domain: { get_input: public_domain }
-      secret_code: secret
-    relationships:
-      - type: cloudify.relationships.contained_in
-        target: bind_host
+      dns_ips: { get_input: dns_ips }
+      domains:
+        - { get_input: private_domain }
+        - { get_input: public_domain }
+      install_agent: false
 
   proxy_node:
     type: SNMPProxy
@@ -482,30 +637,7 @@ node_templates:
           port: 443
           protocol: tcp
 
-  bind_security_group:
-    type: cloudify.openstack.nodes.SecurityGroup
-    properties:
-      security_group:
-        name: clearwater-sg_bind
-        description: DNS
-      rules:
-        - remote_ip_prefix: 0.0.0.0/0
-          port: 53
-          protocol: udp
-        - remote_ip_prefix: 0.0.0.0/0
-          port: 53
-
-
-
-
-  # Declare floating IP for bono, bind and ellis nodes
   bono_floatingip:
-    type: cloudify.openstack.nodes.FloatingIP
-    properties:
-      floatingip:
-        floating_network_name: { get_input: external_network_name }
-
-  bind_floatingip:
     type: cloudify.openstack.nodes.FloatingIP
     properties:
       floatingip:
@@ -549,13 +681,11 @@ workflows:
       relations_unlink:
         description: Target name of the relationships to be broken during the update
         default:
-          - bind
+          - dns
       operation_kwargs:
         description: the operation kwargs
         default: {}
 
 outputs:
-  dns_ip:
-    value: { get_attribute: [bind_floatingip, floating_ip_address] }
   ellis_ip:
     value: { get_attribute: [ellis_floatingip, floating_ip_address] }

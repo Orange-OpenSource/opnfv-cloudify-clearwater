@@ -1,0 +1,385 @@
+groups:
+  bono_group:
+    members: [bono_host, bono_floatingip]
+imports: ['http://www.getcloudify.org/spec/cloudify/3.4/types.yaml', 'http://www.getcloudify.org/spec/openstack-plugin/1.4/plugin.yaml',
+  'http://www.getcloudify.org/spec/diamond-plugin/1.3.3/plugin.yaml', 'https://raw.githubusercontent.com/boucherv-orange/update-vnf/master/plugin.yaml',
+  'https://raw.githubusercontent.com/boucherv-orange/cloudify-openstack-adds-plugin/master/plugin.yaml',
+  'http://www.getcloudify.org/spec/docker-plugin/1.3.1/plugin.yaml', types/monitoring.yaml,
+  types/clearwater.yaml]
+inputs:
+  agent_user: {default: ubuntu, description: User for connecting to agent VM's, type: string}
+  dns_ips:
+    default: []
+    description: ips of desginate api and dns server
+  etcd_ip: {description: ip of etcd cluster, type: string}
+  external_network_name: {description: Network that will be the floating IP, type: string}
+  flavor_id: {description: Flavor ID of the agent VM's (RAM >= 2 GB), type: string}
+  image_id: {description: Image ID of the agent VM's (Ubuntu 14.04 for clearwater),
+    type: string}
+  local_site_name: {description: Name of local site for multisite configuration, type: string}
+  private_domain: {default: site1.clearwater.local, description: Sip domain for Internal
+      communication, type: string}
+  public_domain: {description: Sip domain for sip users and bono load-balancing, type: string}
+  release: {default: repo108, description: Clearwater release, type: string}
+  remote_site_name: {description: Name of remote site for multisite configuration,
+    type: string}
+node_templates:
+  base_security_group:
+    properties:
+      rules:
+      - {port: 22, remote_ip_prefix: 0.0.0.0/0}
+      - {port: 4000, remote_ip_prefix: 0.0.0.0/0}
+      - {port: 2380, remote_ip_prefix: 0.0.0.0/0}
+      - {port: 161, protocol: udp, remote_ip_prefix: 0.0.0.0/0}
+      - {port: 162, protocol: udp, remote_ip_prefix: 0.0.0.0/0}
+      security_group: {description: SSH, name: clearwater-sg_base}
+    type: cloudify.openstack.nodes.SecurityGroup
+  bono:
+    properties:
+      private_domain: clearwater.local
+      release: {get_input: release}
+    relationships:
+    - {target: bono_host, type: cloudify.relationships.contained_in}
+    - source_interfaces:
+        cloudify.interfaces.relationship_lifecycle:
+          establish:
+            inputs:
+              domain: {get_input: public_domain}
+              other_records:
+                SRV: {_sip._tcp: 0 0 5060, _sip._udp: 0 0 5060}
+              record_ip:
+                get_attribute: [bono_floatingip, floating_ip_address]
+          unlink:
+            inputs:
+              domain: {get_input: public_domain}
+              other_records:
+                SRV: {_sip._tcp: 0 0 5060, _sip._udp: 0 0 5060}
+              record_ip:
+                get_attribute: [bono_floatingip, floating_ip_address]
+      target: dns
+      type: cloudify.openstack_adds.node_connected_to_DNS
+    - {target: proxy_node, type: monitors_bono_nodes}
+    type: clearwater.nodes.bono
+  bono_floatingip:
+    properties:
+      floatingip:
+        floating_network_name: {get_input: external_network_name}
+    type: cloudify.openstack.nodes.FloatingIP
+  bono_host:
+    relationships:
+    - {target: bono_floatingip, type: cloudify.openstack.server_connected_to_floating_ip}
+    - {target: base_security_group, type: cloudify.openstack.server_connected_to_security_group}
+    - {target: bono_security_group, type: cloudify.openstack.server_connected_to_security_group}
+    - {target: internal_sip_security_group, type: cloudify.openstack.server_connected_to_security_group}
+    type: clearwater.nodes.MonitoredServer
+  bono_security_group:
+    properties:
+      rules:
+      - {port: 3478, protocol: tcp, remote_ip_prefix: 0.0.0.0/0}
+      - {port: 3478, protocol: udp, remote_ip_prefix: 0.0.0.0/0}
+      - {port: 5060, protocol: tcp, remote_ip_prefix: 0.0.0.0/0}
+      - {port: 5060, protocol: udp, remote_ip_prefix: 0.0.0.0/0}
+      - {port: 5062, protocol: tcp, remote_ip_prefix: 0.0.0.0/0}
+      - {port_range_max: 65535, port_range_min: 32768, protocol: udp, remote_ip_prefix: 0.0.0.0/0}
+      - {port: 6669, remote_ip_prefix: 0.0.0.0/0}
+      - {port: 5058, protocol: tcp, remote_ip_prefix: 0.0.0.0/0}
+      security_group: {description: STUN SIP RTP 0MQ, name: clearwater-sg_bono}
+    type: cloudify.openstack.nodes.SecurityGroup
+  clearwater_mgmt_container:
+    interfaces:
+      cloudify.interfaces.lifecycle:
+        create:
+          implementation: docker.docker_plugin.tasks.create_container
+          inputs:
+            params:
+              command: ./start.sh
+              detach: true
+              ports: [4000, 2380]
+              stdin_open: true
+              tty: true
+        start:
+          implementation: docker.docker_plugin.tasks.start
+          inputs:
+            params:
+              binds: ['/etc/clearwater/local_config:/etc/clearwater/local_config',
+                '/etc/clearwater/shared_config:/etc/clearwater/shared_config']
+              network_mode: host
+              port_bindings: {2380: 2380, 4000: 4000}
+    properties:
+      image: {repository: boucherv/clearwater-management}
+      name: clearwater-management
+    relationships:
+    - {target: manager_host, type: cloudify.relationships.contained_in}
+    - {target: config, type: cloudify.relationships.connected_to}
+    type: cloudify.docker.Container
+  config:
+    relationships:
+    - {target: manager_host, type: cloudify.relationships.contained_in}
+    type: clearwater.nodes.config
+  dns:
+    properties:
+      dns_ips: {get_input: dns_ips}
+      domains:
+      - {get_input: private_domain}
+      - {get_input: public_domain}
+      install_agent: false
+    type: cloudify.openstack_adds.nodes.DNS_client
+  homer:
+    properties:
+      private_domain: clearwater.local
+      release: {get_input: release}
+    relationships:
+    - {target: homer_host, type: cloudify.relationships.contained_in}
+    - {target: dns, type: cw_base_connected_to_DNS}
+    type: clearwater.nodes.homer
+  homer_host:
+    capabilities:
+      scalable:
+        properties: {default_instances: 2, min_instances: 2}
+    relationships:
+    - {target: base_security_group, type: cloudify.openstack.server_connected_to_security_group}
+    - {target: homer_security_group, type: cloudify.openstack.server_connected_to_security_group}
+    type: clearwater.nodes.MonitoredServer
+  homer_security_group:
+    properties:
+      rules:
+      - {port: 7888, protocol: tcp, remote_ip_prefix: 0.0.0.0/0}
+      - {port: 7000, protocol: tcp, remote_ip_prefix: 0.0.0.0/0}
+      - {port: 6665, remote_ip_prefix: 0.0.0.0/0}
+      security_group: {description: REST Cassandra 0MQ, name: clearwater-sg_homer}
+    type: cloudify.openstack.nodes.SecurityGroup
+  homestead:
+    properties:
+      private_domain: clearwater.local
+      release: {get_input: release}
+    relationships:
+    - {target: homestead_host, type: cloudify.relationships.contained_in}
+    - {target: dns, type: cw_base_connected_to_DNS}
+    type: clearwater.nodes.homestead
+  homestead_host:
+    capabilities:
+      scalable:
+        properties: {default_instances: 2, min_instances: 2}
+    relationships:
+    - {target: base_security_group, type: cloudify.openstack.server_connected_to_security_group}
+    - {target: homestead_security_group, type: cloudify.openstack.server_connected_to_security_group}
+    type: clearwater.nodes.MonitoredServer
+  homestead_security_group:
+    properties:
+      rules:
+      - {port: 8888, protocol: tcp, remote_ip_prefix: 0.0.0.0/0}
+      - {port: 8889, protocol: tcp, remote_ip_prefix: 0.0.0.0/0}
+      - {port: 7000, protocol: tcp, remote_ip_prefix: 0.0.0.0/0}
+      - {port_range_max: 6668, port_range_min: 6667, remote_ip_prefix: 0.0.0.0/0}
+      security_group: {description: REST Cassandra 0MQ, name: clearwater-sg_homestead}
+    type: cloudify.openstack.nodes.SecurityGroup
+  internal_sip_security_group:
+    properties:
+      rules:
+      - {port: 5058, protocol: tcp, remote_ip_prefix: 0.0.0.0/0}
+      - {port: 5054, protocol: tcp, remote_ip_prefix: 0.0.0.0/0}
+      - {port: 5052, protocol: tcp, remote_ip_prefix: 0.0.0.0/0}
+      security_group: {description: Internal SIP signalling, name: clearwater-sg_internal_sip}
+    type: cloudify.openstack.nodes.SecurityGroup
+  manager_host:
+    properties:
+      cloudify_agent: {key: ~/my.key, user: centos}
+      install_agent: true
+      ip: 127.0.0.1
+    type: cloudify.nodes.Compute
+  proxy_host:
+    capabilities:
+      scalable:
+        properties: {max_instances: 1, min_instances: 1}
+    interfaces:
+      cloudify.interfaces.monitoring_agent:
+        install:
+          implementation: diamond.diamond_agent.tasks.install
+          inputs:
+            diamond_config: {interval: 10}
+        start: diamond.diamond_agent.tasks.start
+        stop: diamond.diamond_agent.tasks.stop
+        uninstall: diamond.diamond_agent.tasks.uninstall
+    properties:
+      cloudify_agent:
+        user: {get_input: agent_user}
+      flavor: {get_input: flavor_id}
+      image: {get_input: image_id}
+    type: cloudify.openstack.nodes.Server
+  proxy_node:
+    relationships:
+    - {target: proxy_host, type: cloudify.relationships.contained_in}
+    type: SNMPProxy
+  ralf:
+    properties:
+      private_domain: clearwater.local
+      release: {get_input: release}
+    relationships:
+    - {target: ralf_host, type: cloudify.relationships.contained_in}
+    - {target: dns, type: cw_base_connected_to_DNS}
+    type: clearwater.nodes.ralf
+  ralf_host:
+    capabilities:
+      scalable:
+        properties: {min_instances: 0}
+    relationships:
+    - {target: base_security_group, type: cloudify.openstack.server_connected_to_security_group}
+    - {target: ralf_security_group, type: cloudify.openstack.server_connected_to_security_group}
+    type: clearwater.nodes.MonitoredServer
+  ralf_security_group:
+    properties:
+      rules:
+      - {port: 11211, protocol: tcp, remote_ip_prefix: 0.0.0.0/0}
+      - {port: 7253, protocol: tcp, remote_ip_prefix: 0.0.0.0/0}
+      - {port: 10888, protocol: tcp, remote_ip_prefix: 0.0.0.0/0}
+      security_group: {description: memcached Chronos REST, name: clearwater-sg_ralf}
+    type: cloudify.openstack.nodes.SecurityGroup
+  sprout:
+    properties:
+      private_domain: clearwater.local
+      release: {get_input: release}
+    relationships:
+    - {target: sprout_host, type: cloudify.relationships.contained_in}
+    - source_interfaces:
+        cloudify.interfaces.relationship_lifecycle:
+          establish:
+            inputs:
+              other_records:
+                SRV: {_sip._tcp.icscf.sprout: 0 0 5052, _sip._tcp.scscf.sprout: 0
+                    0 5054, _sip._tcp.sprout: 0 0 5054}
+              other_roles: [icscf, scscf]
+          unlink:
+            inputs:
+              other_records:
+                SRV: {_sip._tcp.icscf.sprout: 0 0 5052, _sip._tcp.scscf.sprout: 0
+                    0 5054, _sip._tcp.sprout: 0 0 5054}
+              other_roles: [icscf, scscf]
+      target: dns
+      type: cw_base_connected_to_DNS
+    - {target: proxy_node, type: monitors_sprout_nodes}
+    type: clearwater.nodes.sprout
+  sprout_host:
+    capabilities:
+      scalable:
+        properties: {default_instances: 2, min_instances: 2}
+    relationships:
+    - {target: base_security_group, type: cloudify.openstack.server_connected_to_security_group}
+    - {target: internal_sip_security_group, type: cloudify.openstack.server_connected_to_security_group}
+    - {target: sprout_security_group, type: cloudify.openstack.server_connected_to_security_group}
+    type: clearwater.nodes.MonitoredServer
+  sprout_security_group:
+    properties:
+      rules:
+      - {port: 11211, protocol: tcp, remote_ip_prefix: 0.0.0.0/0}
+      - {port: 7253, protocol: tcp, remote_ip_prefix: 0.0.0.0/0}
+      - {port: 7000, protocol: tcp, remote_ip_prefix: 0.0.0.0/0}
+      - {port: 9160, protocol: tcp, remote_ip_prefix: 0.0.0.0/0}
+      - {port: 9888, protocol: tcp, remote_ip_prefix: 0.0.0.0/0}
+      - {port: 6666, remote_ip_prefix: 0.0.0.0/0}
+      - {port: 443, protocol: tcp, remote_ip_prefix: 0.0.0.0/0}
+      security_group: {description: memcached Chronos 0MQ, name: clearwater-sg_sprout}
+    type: cloudify.openstack.nodes.SecurityGroup
+node_types:
+  clearwater.nodes.MonitoredServer:
+    derived_from: cloudify.openstack.nodes.Server
+    interfaces:
+      cloudify.interfaces.monitoring:
+        start:
+          implementation: diamond.diamond_agent.tasks.add_collectors
+          inputs:
+            collectors_config:
+              default:
+                CPUCollector: {}
+                DiskUsageCollector:
+                  config: {devices: 'x?vd[a-z]+[0-9]*$'}
+                LoadAverageCollector: {}
+                MemoryCollector: {}
+                NetworkCollector: {}
+      cloudify.interfaces.monitoring_agent:
+        install:
+          implementation: diamond.diamond_agent.tasks.install
+          inputs:
+            diamond_config:
+              default: {interval: 5}
+        start: diamond.diamond_agent.tasks.start
+        stop: diamond.diamond_agent.tasks.stop
+        uninstall: diamond.diamond_agent.tasks.uninstall
+    properties:
+      cloudify_agent:
+        default:
+          user: {get_input: agent_user}
+      server:
+        default:
+          flavor: {get_input: flavor_id}
+          image: {get_input: image_id}
+  clearwater.nodes.config:
+    derived_from: clearwater.nodes.base.config
+    properties:
+      dns_ips:
+        default: {get_input: dns_ips}
+      etcd_ip:
+        default: {get_input: etcd_ip}
+      local_site_name:
+        default: {get_input: local_site_name}
+        type: string
+      private_domain:
+        default: {get_input: private_domain}
+        type: string
+      public_domain:
+        default: {get_input: public_domain}
+        type: string
+      remote_site_name:
+        default: {get_input: remote_site_name}
+        type: string
+      secret_code: {default: secret, type: string}
+outputs: {}
+policies:
+  scale_bono:
+    properties: {default_instances: 2}
+    targets: [bono_group]
+    type: cloudify.policies.scaling
+relationships:
+  cw_base_connected_to_DNS:
+    derived_from: cloudify.openstack_adds.node_connected_to_DNS
+    source_interfaces:
+      cloudify.interfaces.relationship_lifecycle:
+        establish:
+          executor: central_deployment_agent
+          implementation: openstack_adds.designate_plugin.recordsets.add_node
+          inputs:
+            domain:
+              default: {get_input: private_domain}
+            other_records:
+              default: []
+            other_roles:
+              default: []
+            record_ip: {default: ''}
+        unlink:
+          executor: central_deployment_agent
+          implementation: openstack_adds.designate_plugin.recordsets.del_node
+          inputs:
+            domain:
+              default: {get_input: private_domain}
+            other_records:
+              default: []
+            other_roles:
+              default: []
+            record_ip: {default: ''}
+tosca_definitions_version: cloudify_dsl_1_3
+workflows:
+  upgrade-all-clearwater:
+    mapping: update-workflow.update.run_operation
+    parameters:
+      nodes_types_dependency: {default: true, description: Add dependency between
+          nodes types update task}
+      nodes_types_list:
+        default: [clearwater.nodes.ralf, clearwater.nodes.homestead, clearwater.nodes.homer,
+          clearwater.nodes.sprout, clearwater.nodes.bono, clearwater.nodes.ellis]
+        description: List of nodes that need to be updated/upgraded
+      operation: {description: the operation to execute}
+      operation_kwargs:
+        default: {}
+        description: the operation kwargs
+      relations_unlink:
+        default: [dns]
+        description: Target name of the relationships to be broken during the update
