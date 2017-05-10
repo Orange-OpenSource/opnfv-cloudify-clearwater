@@ -80,7 +80,7 @@ node_types:
         stop: diamond.diamond_agent.tasks.stop
         uninstall: diamond.diamond_agent.tasks.uninstall
 
-      cloudify.interfaces.monitoring:vellum
+      cloudify.interfaces.monitoring:
           start:
             implementation: diamond.diamond_agent.tasks.add_collectors
             inputs:
