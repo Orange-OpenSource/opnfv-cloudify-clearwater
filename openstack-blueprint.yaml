@@ -102,7 +102,7 @@ node_templates:
     capabilities:
       scalable:
         properties:
-          default_instances: 2
+          default_instances: 1
           min_instances: 1
     relationships:
       - target: base_security_group
@@ -168,7 +168,7 @@ node_templates:
     capabilities:
       scalable:
         properties:
-          min_instances: 0
+          min_instances: 1
     relationships:
       - target: base_security_group
         type: cloudify.openstack.server_connected_to_security_group
@@ -511,7 +511,7 @@ policies:
   scale_bono:
     type: cloudify.policies.scaling
     properties:
-      default_instances: 2
+      default_instances: 1
     targets: [bono_group]
 
 outputs:
