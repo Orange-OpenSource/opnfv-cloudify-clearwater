@@ -2,6 +2,7 @@
 
 ctx logger debug "${COMMAND}"
 
+
 release=$(ctx node properties release)
 
 ctx logger info "Configure the APT software source"
@@ -17,11 +18,9 @@ if [ ! -f /etc/apt/sources.list.d/clearwater.list ]
 fi
 sudo apt-get update
 
-ctx logger info "Installing homestead packages and other clearwater packages"
-set +e
-sudo DEBIAN_FRONTEND=noninteractive  apt-get -o Dpkg::Options::=--force-confdef -o Dpkg::Options::=--force-confnew install homestead homestead-prov clearwater-prov-tools --yes --force-yes
+ctx logger info "Installing dime packages and other clearwater packages"
+sudo DEBIAN_FRONTEND=noninteractive apt-get install dime --yes --force-yes -o DPkg::options::=--force-confnew
 sudo DEBIAN_FRONTEND=noninteractive  apt-get install clearwater-management --yes --force-yes
-set -e
 ctx logger info "The installation packages is done correctly"
 
 ctx logger info "Use the DNS server"

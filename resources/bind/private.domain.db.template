@@ -28,8 +28,8 @@ bono                   IN NAPTR 1 1 "S" "SIP+D2T" "" _sip._tcp
 bono                   IN NAPTR 2 1 "S" "SIP+D2U" "" _sip._udp
 {% if backends.bono is defined %}
 {% for id, backend in backends.bono.iteritems() %}
-_sip._tcp              IN SRV   0 0 5060 {{backend.name}}	
-_sip._udp              IN SRV   0 0 5060 {{backend.name}}	
+_sip._tcp              IN SRV   0 0 5060 {{backend.name}}
+_sip._udp              IN SRV   0 0 5060 {{backend.name}}
 {% endfor %}
 {% endif %}
 ; sprout
@@ -84,18 +84,18 @@ _sip._tcp.icscf.sprout       IN SRV   0 0 5052 {{backend.name}}
 
 
 ;
-; homestead
+; vellum
 ; =========
 ;
-{% if backends.homestead is defined %}
-{% for id, backend in backends.homestead.iteritems() %}
+{% if backends.vellum is defined %}
+{% for id, backend in backends.vellum.iteritems() %}
 {{backend.name}}		 	IN A  		{{ backend.private_address }}
 {% endfor %}
 {% endif %}
 ;
-{% if backends.homestead is defined %}
-{% for id, backend in backends.homestead.iteritems() %}
-hs	 	IN A  		{{ backend.private_address }}
+{% if backends.vellum is defined %}
+{% for id, backend in backends.vellum.iteritems() %}
+vellum	 	IN A  		{{ backend.private_address }}
 {% endfor %}
 {% endif %}
 ;
@@ -113,18 +113,20 @@ hs	 	IN A  		{{ backend.private_address }}
 homer	 	IN A  		{{ backend.private_address }}
 {% endfor %}
 {% endif %}
-; ralf
+; dime
 ; =====
 ;
-{% if backends.ralf is defined %}
-{% for id, backend in backends.ralf.iteritems() %}
+{% if backends.dime is defined %}
+{% for id, backend in backends.dime.iteritems() %}
 {{backend.name}}		 	IN A  		{{ backend.private_address }}
 {% endfor %}
 {% endif %}
 ;
-{% if backends.ralf is defined %}
-{% for id, backend in backends.ralf.iteritems() %}
-ralf	 	IN A  		{{ backend.private_address }}
+{% if backends.dime is defined %}
+{% for id, backend in backends.dime.iteritems() %}
+hs	 	IN A  		{{ backend.private_address }}
+hs-prov	 	IN A  		{{ backend.private_address }}
+dime	 	IN A  		{{ backend.private_address }}
 {% endfor %}
 {% endif %}
 ;

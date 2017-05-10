@@ -46,12 +46,12 @@ node_types:
         stop: scripts/clearwater/bono/stop-bono.sh
         delete: scripts/clearwater/other/remove-cluster-node.sh
 
-  clearwater.nodes.homestead:
+  clearwater.nodes.vellum:
     derived_from: clearwater.nodes.config
     interfaces:
       cloudify.interfaces.lifecycle:
-        configure: scripts/clearwater/homestead/install-homestead.sh
-        stop: scripts/clearwater/homestead/stop-homestead.sh
+        configure: scripts/clearwater/vellum/install-vellum.sh
+        stop: scripts/clearwater/vellum/stop-vellum.sh
         delete: scripts/clearwater/other/remove-cluster-node.sh
 
   clearwater.nodes.homer:
@@ -62,12 +62,12 @@ node_types:
         stop: scripts/clearwater/homer/stop-homer.sh
         delete: scripts/clearwater/other/remove-cluster-node.sh
 
-  clearwater.nodes.ralf:
+  clearwater.nodes.dime:
     derived_from: clearwater.nodes.config
     interfaces:
       cloudify.interfaces.lifecycle:
-        configure: scripts/clearwater/ralf/install-ralf.sh
-        stop: scripts/clearwater/ralf/stop-ralf.sh
+        configure: scripts/clearwater/dime/install-dime.sh
+        stop: scripts/clearwater/dime/stop-dime.sh
         delete: scripts/clearwater/other/remove-cluster-node.sh
 
   clearwater.nodes.ellis:
