@@ -16,8 +16,8 @@
 tosca_definitions_version: cloudify_dsl_1_3
 
 imports:
-  - http://www.getcloudify.org/spec/cloudify/3.4/types.yaml
-  - http://www.getcloudify.org/spec/openstack-plugin/1.4/plugin.yaml
+  - http://www.getcloudify.org/spec/cloudify/4.0.1/types.yaml
+  - https://github.com/boucherv-orange/cloudify-openstack-plugin/raw/2.0-devel/plugin.yaml
   - http://www.getcloudify.org/spec/diamond-plugin/1.3/plugin.yaml
   - types/monitoring.yaml
   - types/clearwater.yaml
@@ -38,6 +38,10 @@ inputs:
     default: ubuntu
     description: User for connecting to agent VM's
 
+  network_name:
+    description: Openstack network name the new server will be connected to
+    default: net2
+
   external_network_name:
     type: string
     description: Network that will be the floating IP
@@ -51,6 +55,39 @@ inputs:
     default: repo107
     description: Clearwater release
 
+  key_pair_name:
+    default: clearwater-key
+    description: Openstack key pair name of the key to associate with the new server
+
+  private_key_path:
+    description: |
+      Path to the private key which will be used for connecting to the server
+      on the manager or machine running CLI if running in local mode.
+
+  region:
+    default: ''
+    type: string
+
+  central_region:
+    default: ''
+    type: string
+
+dsl_definitions:
+
+  openstack_config: &openstack_config
+    username: { get_secret: keystone_username }
+    password: { get_secret: keystone_password }
+    tenant_name: { get_secret: keystone_tenant_name }
+    auth_url: { get_secret: keystone_url }
+    region: { get_input: region }
+
+  central_openstack_config: &central_openstack_config
+    username: { get_secret: keystone_username }
+    password: { get_secret: keystone_password }
+    tenant_name: { get_secret: keystone_tenant_name }
+    auth_url: { get_secret: keystone_url }
+    region: { get_input: central_region }
+
 node_types:
 
   # Global types for VMs
@@ -61,13 +98,18 @@ node_types:
   clearwater.nodes.MonitoredServer:
     derived_from: cloudify.openstack.nodes.Server
     properties:
+      openstack_config:
+        default: *openstack_config
       cloudify_agent:
         default:
           user: { get_input: agent_user }
-      server:
-        default:
-          image: { get_input: image_id }
-          flavor: { get_input: flavor_id }
+          key: { get_property: [ keypair, private_key_path ] }
+      image:
+        default: { get_input: image_id }
+      flavor:
+        default: { get_input: flavor_id }
+      management_network_name:
+        default: { get_input: network_name }
     interfaces:
       cloudify.interfaces.monitoring_agent:
         install:
@@ -96,15 +138,26 @@ node_types:
 
 node_templates:
 
+  keypair:
+    type: cloudify.openstack.nodes.KeyPair
+    properties:
+      openstack_config: *openstack_config
+      resource_id: { get_input: key_pair_name }
+      use_external_resource: true
+      private_key_path: { get_input: private_key_path }
+
   # Declare host VMs and attach them at floating ip or security group
   sprout_host:
     type: clearwater.nodes.MonitoredServer
     capabilities:
       scalable:
         properties:
-          default_instances: 2
+          default_instances: 1
           min_instances: 1
     relationships:
+      - type: cloudify.openstack.server_connected_to_keypair
+        target: keypair
+
       - target: base_security_group
         type: cloudify.openstack.server_connected_to_security_group
 
@@ -114,6 +167,23 @@ node_templates:
       - target: sprout_security_group
         type: cloudify.openstack.server_connected_to_security_group
 
+  bono_port:
+    type: cloudify.openstack.nodes.Port
+    properties:
+      use_external_resource: true
+      openstack_config: *central_openstack_config
+    interfaces:
+      cloudify.interfaces.lifecycle:
+        create:
+          inputs:
+            args:
+              port_ip: { get_attribute: [ bono_host, ip ] }
+    relationships:
+      - type: cloudify.relationships.connected_to
+        target: bono_host
+      - type: cloudify.openstack.port_connected_to_floating_ip
+        target: bono_floatingip
+
   bono_host:
     type: clearwater.nodes.MonitoredServer
     capabilities:
@@ -121,8 +191,8 @@ node_templates:
         properties:
           min_instances: 1
     relationships:
-      - target: bono_floatingip
-        type: cloudify.openstack.server_connected_to_floating_ip
+      - type: cloudify.openstack.server_connected_to_keypair
+        target: keypair
 
       - target: base_security_group
         type: cloudify.openstack.server_connected_to_security_group
@@ -133,6 +203,23 @@ node_templates:
       - target: internal_sip_security_group
         type: cloudify.openstack.server_connected_to_security_group
 
+  ellis_port:
+    type: cloudify.openstack.nodes.Port
+    properties:
+      use_external_resource: true
+      openstack_config: *central_openstack_config
+    interfaces:
+      cloudify.interfaces.lifecycle:
+        create:
+          inputs:
+            args:
+              port_ip: { get_attribute: [ ellis_host, ip ] }
+    relationships:
+      - type: cloudify.relationships.connected_to
+        target: ellis_host
+      - type: cloudify.openstack.port_connected_to_floating_ip
+        target: ellis_floatingip
+
   ellis_host:
     type: clearwater.nodes.MonitoredServer
     capabilities:
@@ -141,8 +228,8 @@ node_templates:
           min_instances: 1
           max_instances: 1
     relationships:
-      - target: ellis_floatingip
-        type: cloudify.openstack.server_connected_to_floating_ip
+      - type: cloudify.openstack.server_connected_to_keypair
+        target: keypair
 
       - target: base_security_group
         type: cloudify.openstack.server_connected_to_security_group
@@ -157,6 +244,9 @@ node_templates:
         properties:
           min_instances: 1
     relationships:
+      - type: cloudify.openstack.server_connected_to_keypair
+        target: keypair
+
       - target: base_security_group
         type: cloudify.openstack.server_connected_to_security_group
 
@@ -168,8 +258,12 @@ node_templates:
     capabilities:
       scalable:
         properties:
+          default_instances: 1
           min_instances: 0
     relationships:
+      - type: cloudify.openstack.server_connected_to_keypair
+        target: keypair
+
       - target: base_security_group
         type: cloudify.openstack.server_connected_to_security_group
 
@@ -183,12 +277,31 @@ node_templates:
         properties:
           min_instances: 1
     relationships:
+      - type: cloudify.openstack.server_connected_to_keypair
+        target: keypair
+
       - target: base_security_group
         type: cloudify.openstack.server_connected_to_security_group
 
       - target: homer_security_group
         type: cloudify.openstack.server_connected_to_security_group
 
+  bind_port:
+    type: cloudify.openstack.nodes.Port
+    properties:
+      use_external_resource: true
+      openstack_config: *central_openstack_config
+    interfaces:
+      cloudify.interfaces.lifecycle:
+        create:
+          inputs:
+            args:
+              port_ip: { get_attribute: [ bind_host, ip ] }
+    relationships:
+      - type: cloudify.relationships.connected_to
+        target: bind_host
+      - type: cloudify.openstack.port_connected_to_floating_ip
+        target: bind_floatingip
 
   bind_host:
     type: clearwater.nodes.MonitoredServer
@@ -198,14 +311,14 @@ node_templates:
           min_instances: 1
           max_instances: 1
     relationships:
+      - type: cloudify.openstack.server_connected_to_keypair
+        target: keypair
+
       - target: base_security_group
         type: cloudify.openstack.server_connected_to_security_group
 
       - target: bind_security_group
         type: cloudify.openstack.server_connected_to_security_group
-
-      - target: bind_floatingip
-        type: cloudify.openstack.server_connected_to_floating_ip
 
 
   proxy_host:
@@ -218,8 +331,11 @@ node_templates:
     properties:
       cloudify_agent:
           user: { get_input: agent_user }
+          key: { get_property: [ keypair, private_key_path ] }
       image: { get_input: image_id }
       flavor: { get_input: flavor_id }
+      management_network_name: { get_input: network_name }
+      openstack_config: *openstack_config
     interfaces:
       cloudify.interfaces.monitoring_agent:
         install:
@@ -230,6 +346,9 @@ node_templates:
         start: diamond.diamond_agent.tasks.start
         stop: diamond.diamond_agent.tasks.stop
         uninstall: diamond.diamond_agent.tasks.uninstall
+    relationships:
+      - type: cloudify.openstack.server_connected_to_keypair
+        target: keypair
 
   # Declare clearwater and other software
   sprout:
@@ -322,6 +441,7 @@ node_templates:
   base_security_group:
     type: cloudify.openstack.nodes.SecurityGroup
     properties:
+      openstack_config: *openstack_config
       security_group:
         name: clearwater-sg_base
         description: SSH
@@ -342,6 +462,7 @@ node_templates:
   bono_security_group:
     type: cloudify.openstack.nodes.SecurityGroup
     properties:
+      openstack_config: *openstack_config
       security_group:
         name: clearwater-sg_bono
         description: STUN SIP RTP 0MQ
@@ -374,6 +495,7 @@ node_templates:
   internal_sip_security_group:
     type: cloudify.openstack.nodes.SecurityGroup
     properties:
+      openstack_config: *openstack_config
       security_group:
         name: clearwater-sg_internal_sip
         description: Internal SIP signalling
@@ -391,6 +513,7 @@ node_templates:
   sprout_security_group:
     type: cloudify.openstack.nodes.SecurityGroup
     properties:
+      openstack_config: *openstack_config
       security_group:
         name: clearwater-sg_sprout
         description: memcached Chronos 0MQ
@@ -419,6 +542,7 @@ node_templates:
   ralf_security_group:
     type: cloudify.openstack.nodes.SecurityGroup
     properties:
+      openstack_config: *openstack_config
       security_group:
         name: clearwater-sg_ralf
         description: memcached Chronos REST
@@ -436,6 +560,7 @@ node_templates:
   homestead_security_group:
     type: cloudify.openstack.nodes.SecurityGroup
     properties:
+      openstack_config: *openstack_config
       security_group:
         name: clearwater-sg_homestead
         description: REST Cassandra 0MQ
@@ -456,6 +581,7 @@ node_templates:
   homer_security_group:
     type: cloudify.openstack.nodes.SecurityGroup
     properties:
+      openstack_config: *openstack_config
       security_group:
         name: clearwater-sg_homer
         description: REST Cassandra 0MQ
@@ -472,6 +598,7 @@ node_templates:
   ellis_security_group:
     type: cloudify.openstack.nodes.SecurityGroup
     properties:
+      openstack_config: *openstack_config
       security_group:
         name: clearwater-sg_ellis
         description: Web UI
@@ -486,6 +613,7 @@ node_templates:
   bind_security_group:
     type: cloudify.openstack.nodes.SecurityGroup
     properties:
+      openstack_config: *openstack_config
       security_group:
         name: clearwater-sg_bind
         description: DNS
@@ -503,18 +631,21 @@ node_templates:
   bono_floatingip:
     type: cloudify.openstack.nodes.FloatingIP
     properties:
+      openstack_config: *central_openstack_config
       floatingip:
         floating_network_name: { get_input: external_network_name }
 
   bind_floatingip:
     type: cloudify.openstack.nodes.FloatingIP
     properties:
+      openstack_config: *central_openstack_config
       floatingip:
         floating_network_name: { get_input: external_network_name }
 
   ellis_floatingip:
     type: cloudify.openstack.nodes.FloatingIP
     properties:
+      openstack_config: *central_openstack_config
       floatingip:
         floating_network_name: { get_input: external_network_name }
 
