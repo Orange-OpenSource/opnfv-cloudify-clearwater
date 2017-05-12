@@ -55,18 +55,41 @@ node_types:
         stop: scripts/clearwater/vellum/stop-vellum.sh
         delete: scripts/clearwater/other/remove-cluster-node.sh
 
+
   clearwater.nodes.vellum.provisioning:
-    derived_from: cloudify.nodes.SoftwareComponent
+    derived_from: cloudify.nodes.Compute
     properties:
+      agent_config:
+        default:
+          install_method: none
+      ssh_user:
+        type: string
+      ssh_key:
+        type: string
+      vellum_ip:
+        type: string
+      number_of_subscribers:
+        type: integer
       public_domain:
         description: Sip domain
         type: string
-      end_number:
-        description: 2010000000 to ? 2010049999 ?
-        type: integer
     interfaces:
       cloudify.interfaces.lifecycle:
-        configure: scripts/clearwater/vellum/numbers_provisioning.sh
+        create:
+          implementation: fabric.fabric_plugin.tasks.run_script
+          inputs:
+            script_path:
+              default: scripts/clearwater/vellum/provisioning_numbers.sh
+            number_of_subscribers:
+              default: { get_property: [SELF, number_of_subscribers]}
+            public_domain:
+              default: { get_property: [SELF, public_domain]}
+            fabric_env:
+              default:
+                user: { get_property: [SELF, ssh_user] }
+                key_filename: { get_property: [SELF, ssh_key] }
+                host_string: { get_property: [SELF, vellum_ip] }
+                always_use_pty: true
 
   clearwater.nodes.homer:
     derived_from: clearwater.nodes.config

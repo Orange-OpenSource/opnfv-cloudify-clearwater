@@ -21,7 +21,7 @@ imports:
 inputs:
 
   number_of_subscribers:
-    type: string
+    type: integer
     default: 50000
 
 node_templates:
