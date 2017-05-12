@@ -20,30 +20,21 @@ imports:
 
 inputs:
 
-  end_number:
+  number_of_subscribers:
     type: string
-    description: 2010000000 to ? 2010049999 ?
-    default: 2010049999
+    default: 50000
 
 node_templates:
-
-  one_vellum_host:
-    type: cloudify.nodes.Compute
-    properties:
-      install_agent: false
-      ip: { get_attribute: [vellum_host, ip] }
-      cloudify_agent:
-        user: { get_input: agent_user }
-        key: /root/ssh/agent.key
 
   # Declare clearwater and other software
   vellum_provisioning:
     type: clearwater.nodes.vellum.provisioning
     properties:
       public_domain: { get_input: public_domain }
-      end_number: { get_input: end_number }
+      number_of_subscribers: { get_input: number_of_subscribers }
+      ssh_user: { get_input: agent_user }
+      ssh_key: /root/ssh/agent_key.pem
+      vellum_ip: { get_attribute: [vellum_host, ip] }
     relationships:
-      - type: cloudify.relationships.contained_in
-        target: one_vellum_host
       - type: cloudify.relationships.connected_to
         target: vellum
