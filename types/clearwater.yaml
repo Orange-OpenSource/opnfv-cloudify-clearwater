@@ -55,6 +55,19 @@ node_types:
         stop: scripts/clearwater/vellum/stop-vellum.sh
         delete: scripts/clearwater/other/remove-cluster-node.sh
 
+  clearwater.nodes.vellum.provisioning:
+    derived_from: cloudify.nodes.SoftwareComponent
+    properties:
+      public_domain:
+        description: Sip domain
+        type: string
+      end_number:
+        description: 2010000000 to ? 2010049999 ?
+        type: integer
+    interfaces:
+      cloudify.interfaces.lifecycle:
+        configure: scripts/clearwater/vellum/numbers_provisioning.sh
+
   clearwater.nodes.homer:
     derived_from: clearwater.nodes.config
     interfaces:

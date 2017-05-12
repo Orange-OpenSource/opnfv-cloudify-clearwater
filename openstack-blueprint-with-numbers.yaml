@@ -36,6 +36,7 @@ node_templates:
         user: { get_input: agent_user }
         key: /root/ssh/agent.key
 
+  # Declare clearwater and other software
   vellum_provisioning:
     type: clearwater.nodes.vellum.provisioning
     properties:
