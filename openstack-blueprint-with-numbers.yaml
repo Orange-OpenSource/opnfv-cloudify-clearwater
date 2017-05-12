@@ -38,7 +38,7 @@ node_templates:
 
   # Declare clearwater and other software
   numbers_provisioning:
-    type: cloudify.nodes.SoftwareComponent
+    derived_from: cloudify.nodes.SoftwareComponent
     properties:
       public_domain: { get_input: public_domain }
       end_number: { get_input: end_number }
