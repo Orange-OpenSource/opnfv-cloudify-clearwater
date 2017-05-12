@@ -51,7 +51,7 @@ node_types:
     interfaces:
       cloudify.interfaces.lifecycle:
         configure: scripts/clearwater/vellum/install-vellum.sh
-        start: scripts/clearwater/sprout/start-vellum.sh
+        start: scripts/clearwater/vellum/start-vellum.sh
         stop: scripts/clearwater/vellum/stop-vellum.sh
         delete: scripts/clearwater/other/remove-cluster-node.sh
 
