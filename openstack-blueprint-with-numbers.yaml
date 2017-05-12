@@ -36,15 +36,11 @@ node_templates:
         user: { get_input: agent_user }
         key: /root/ssh/agent.key
 
-  # Declare clearwater and other software
-  numbers_provisioning:
-    derived_from: cloudify.nodes.SoftwareComponent
+  vellum_provisioning:
+    type: clearwater.nodes.vellum.provisioning
     properties:
       public_domain: { get_input: public_domain }
       end_number: { get_input: end_number }
-    interfaces:
-      cloudify.interfaces.lifecycle:
-        configure: scripts/clearwater/vellum/numbers_provisioning.sh
     relationships:
       - type: cloudify.relationships.contained_in
         target: one_vellum_host
