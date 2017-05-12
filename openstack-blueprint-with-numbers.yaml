@@ -30,7 +30,7 @@ node_templates:
   one_vellum_host:
     type: cloudify.nodes.Compute
     properties:
-      install_agent: true
+      install_agent: false
       ip: { get_attribute: [vellum_host, ip] }
       cloudify_agent:
         user: { get_input: agent_user }
