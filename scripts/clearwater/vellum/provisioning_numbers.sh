@@ -1,4 +1,4 @@
-#!/bin/bash -e
+#!/bin/bash 
 
 ctx logger debug "${COMMAND}"
 
