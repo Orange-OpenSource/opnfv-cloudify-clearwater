@@ -1,0 +1,10 @@
+agent_user: ubuntu
+image_id: ubuntu_14.04
+flavor_id: '2'
+network_name: net2
+external_network_name: 'ext-net1'
+public_domain: clearwater.pub
+key_pair_name: boucherv
+private_key_path: '~/.ssh/hello.pem'
+region: RegionOne
+central_region: CentralRegion
