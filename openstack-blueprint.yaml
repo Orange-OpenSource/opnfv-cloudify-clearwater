@@ -52,7 +52,7 @@ inputs:
 
   release:
     type: string
-    default: repo107
+    default: stable
     description: Clearwater release
 
   key_pair_name:
@@ -237,7 +237,7 @@ node_templates:
       - target: ellis_security_group
         type: cloudify.openstack.server_connected_to_security_group
 
-  homestead_host:
+  vellum_host:
     type: clearwater.nodes.MonitoredServer
     capabilities:
       scalable:
@@ -250,16 +250,15 @@ node_templates:
       - target: base_security_group
         type: cloudify.openstack.server_connected_to_security_group
 
-      - target: homestead_security_group
+      - target: vellum_security_group
         type: cloudify.openstack.server_connected_to_security_group
 
-  ralf_host:
+  dime_host:
     type: clearwater.nodes.MonitoredServer
     capabilities:
       scalable:
         properties:
-          default_instances: 0
-          min_instances: 0
+          min_instances: 1
     relationships:
       - type: cloudify.openstack.server_connected_to_keypair
         target: keypair
@@ -267,7 +266,7 @@ node_templates:
       - target: base_security_group
         type: cloudify.openstack.server_connected_to_security_group
 
-      - target: ralf_security_group
+      - target: dime_security_group
         type: cloudify.openstack.server_connected_to_security_group
 
   homer_host:
@@ -387,25 +386,25 @@ node_templates:
       - type: app_connected_to_bind_ellis
         target: bind
 
-  ralf:
-    type: clearwater.nodes.ralf
+  dime:
+    type: clearwater.nodes.dime
     properties:
       private_domain: clearwater.local
       release: { get_input: release }
     relationships:
       - type: cloudify.relationships.contained_in
-        target: ralf_host
+        target: dime_host
       - type: app_connected_to_bind
         target: bind
 
-  homestead:
-    type: clearwater.nodes.homestead
+  vellum:
+    type: clearwater.nodes.vellum
     properties:
       private_domain: clearwater.local
       release: { get_input: release }
     relationships:
       - type: cloudify.relationships.contained_in
-        target: homestead_host
+        target: vellum_host
       - type: app_connected_to_bind
         target: bind
 
@@ -454,9 +453,6 @@ node_templates:
           port: 2380
         - remote_ip_prefix: 0.0.0.0/0
           port: 161
-          protocol: udp
-        - remote_ip_prefix: 0.0.0.0/0
-          port: 162
           protocol: udp
 
   bono_security_group:
@@ -519,7 +515,40 @@ node_templates:
         description: memcached Chronos 0MQ
       rules:
         - remote_ip_prefix: 0.0.0.0/0
+          port: 9888
+          protocol: tcp
+
+  dime_security_group:
+    type: cloudify.openstack.nodes.SecurityGroup
+    properties:
+      openstack_config: *openstack_config
+      security_group:
+        name: clearwater-sg_dime
+        description: memcached Chronos REST
+      rules:
+        - remote_ip_prefix: 0.0.0.0/0
+          port: 8888
+          protocol: tcp
+        - remote_ip_prefix: 0.0.0.0/0
+          port: 8889
+          protocol: tcp
+        - remote_ip_prefix: 0.0.0.0/0
+          port: 10888
+          protocol: tcp
+
+  vellum_security_group:
+    type: cloudify.openstack.nodes.SecurityGroup
+    properties:
+      openstack_config: *openstack_config
+      security_group:
+        name: clearwater-sg_vellum
+        description: REST Cassandra 0MQ
+      rules:
+        - remote_ip_prefix: 0.0.0.0/0
           port: 11211
+          protocol: tcp
+        - remote_ip_prefix: 0.0.0.0/0
+          port: 11311
           protocol: tcp
         - remote_ip_prefix: 0.0.0.0/0
           port: 7253
@@ -529,50 +558,6 @@ node_templates:
           protocol: tcp
         - remote_ip_prefix: 0.0.0.0/0
           port: 9160
-          protocol: tcp
-        - remote_ip_prefix: 0.0.0.0/0
-          port: 9888
-          protocol: tcp
-        - remote_ip_prefix: 0.0.0.0/0
-          port: 6666
-        - remote_ip_prefix: 0.0.0.0/0
-          port: 443
-          protocol: tcp
-
-  ralf_security_group:
-    type: cloudify.openstack.nodes.SecurityGroup
-    properties:
-      openstack_config: *openstack_config
-      security_group:
-        name: clearwater-sg_ralf
-        description: memcached Chronos REST
-      rules:
-        - remote_ip_prefix: 0.0.0.0/0
-          port: 11211
-          protocol: tcp
-        - remote_ip_prefix: 0.0.0.0/0
-          port: 7253
-          protocol: tcp
-        - remote_ip_prefix: 0.0.0.0/0
-          port: 10888
-          protocol: tcp
-
-  homestead_security_group:
-    type: cloudify.openstack.nodes.SecurityGroup
-    properties:
-      openstack_config: *openstack_config
-      security_group:
-        name: clearwater-sg_homestead
-        description: REST Cassandra 0MQ
-      rules:
-        - remote_ip_prefix: 0.0.0.0/0
-          port: 8888
-          protocol: tcp
-        - remote_ip_prefix: 0.0.0.0/0
-          port: 8889
-          protocol: tcp
-        - remote_ip_prefix: 0.0.0.0/0
-          port: 7000
           protocol: tcp
         - remote_ip_prefix: 0.0.0.0/0
           port_range_min: 6667
@@ -590,10 +575,8 @@ node_templates:
           port: 7888
           protocol: tcp
         - remote_ip_prefix: 0.0.0.0/0
-          port: 7000
+          port: 9160
           protocol: tcp
-        - remote_ip_prefix: 0.0.0.0/0
-          port: 6665
 
   ellis_security_group:
     type: cloudify.openstack.nodes.SecurityGroup
