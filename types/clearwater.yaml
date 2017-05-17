@@ -23,11 +23,10 @@ node_types:
     interfaces:
       cloudify.interfaces.lifecycle:
         create:
-          implementation: scripts/clearwater/other/clearwater.py
+          implementation: scripts/clearwater/other/configure.py
           inputs:
-            invocation:
-              default:
-                function: configure
+            public_ip:
+              default: ''
 
   # Specific types for clearwater nodes (install role etc.)
   clearwater.nodes.sprout:

@@ -1,2 +1,0 @@
-zone "{{private_domain}}" IN { type master; file "/etc/bind/db.{{private_domain}}"; };
-zone "{{public_domain}}" IN { type master; file "/etc/bind/db.{{public_domain}}"; };

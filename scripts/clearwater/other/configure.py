@@ -10,15 +10,11 @@
 # http://www.apache.org/licenses/LICENSE-2.0
 ########################################################################
 
-import os
-import subprocess
 import tempfile
 import re
-from contextlib import contextmanager
 
 from jinja2 import Template
 
-from cloudify_rest_client import exceptions as rest_exceptions
 from cloudify import ctx
 from cloudify.state import ctx_parameters as inputs
 from cloudify import exceptions
@@ -28,11 +24,13 @@ from cloudify import utils
 
 # config files destination
 CONFIG_PATH = '/etc/clearwater/local_config'
+CONFIG_PATH_ETCD = '/etc/clearwater/shared_config'
 CONFIG_PATH_NAMESERVER = '/etc/dnsmasq.resolv.conf'
 
 # Path of jinja template config files
 TEMPLATE_RESOURCE_NAME = 'resources/clearwater/local_config.template'
 TEMPLATE_RESOURCE_NAME_NAMESERVER = 'resources/bind/dnsmasq.template'
+TEMPLATE_RESOURCE_NAME_ETCD = 'resources/clearwater/shared_config.template'
 
 
 def configure(subject=None):
@@ -44,29 +42,19 @@ def configure(subject=None):
     ctx.logger.debug('Building a dict object that will contain variables '
                      'to write to the Jinja2 template.')
 
-    # Get the host public IP
     name = ctx.instance.id
-    relationships = ctx.instance.relationships
-    public_ip = ''
-    for element in relationships:
-        if element.type == 'cloudify.relationships.contained_in':
-            for elements in element.target.instance.relationships:
-                if elements.type == 'cloudify.openstack.server_connected_to_floating_ip':
-                    public_ip = elements.target.instance.runtime_properties['floating_ip_address']
-
-    # Get bind host IP
-    binds = []
-    for element in relationships:
-        text = element.target.instance.id
-        if re.split(r'_',text)[0] == 'bind':
-            binds.append(element.target.instance.host_ip)
 
     config = subject.node.properties.copy()
+    role = re.split(r'_',name)[0]
+    if role=="config" and config['local_site_name'] == 'site1':
+        etcd_ip = "$(ip addr show eth0 | grep 'inet\\b' | awk '{print $2}' | cut -d/ -f1)"
+    else:
+        etcd_ip = config['etcd_ip']
     config.update(dict(
         name=name.replace('_','-'),
         host_ip=subject.instance.host_ip,
-        etcd_ip=binds[0],
-        public_ip=public_ip))
+        public_ip=inputs['public_ip'],
+        etcd_ips=[etcd_ip]))
 
 
     ctx.logger.debug('Rendering the Jinja2 template to {0}.'.format(CONFIG_PATH))
@@ -83,11 +71,24 @@ def configure(subject=None):
     _run('sudo chmod 644 {0}'.format(CONFIG_PATH),
          error_message='Failed to change permissions {0}.'.format(CONFIG_PATH))
 
+    # Generate shared_config file for clearwater-etcd software
+    if role=="config":
+        template = Template(ctx.get_resource(TEMPLATE_RESOURCE_NAME_ETCD))
+
+        ctx.logger.debug('Rendering the Jinja2 template to {0}.'.format(CONFIG_PATH_ETCD))
+        ctx.logger.debug('The config dict: {0}.'.format(config))
+
+        with tempfile.NamedTemporaryFile(delete=False) as temp_config:
+            temp_config.write(template.render(config))
+
+        _run('sudo mv {0} {1}'.format(temp_config.name, CONFIG_PATH_ETCD),
+             error_message='Failed to write to {0}.'.format(CONFIG_PATH_ETCD))
+        _run('sudo chmod 644 {0}'.format(CONFIG_PATH_ETCD),
+             error_message='Failed to change permissions {0}.'.format(CONFIG_PATH_ETCD))
+
     template = Template(ctx.get_resource(TEMPLATE_RESOURCE_NAME_NAMESERVER))
 
     config = subject.node.properties.copy()
-
-    config.update(dict(binds=binds))
 
     # Generate dnsmasq file from jinja template
     with tempfile.NamedTemporaryFile(delete=False) as temp_config:
@@ -122,13 +123,5 @@ def _run(command, error_message):
         raise exceptions.NonRecoverableError('{0}: {1}'.format(error_message, e))
 
 
-def _main():
-    invocation = inputs['invocation']
-    function = invocation['function']
-    args = invocation.get('args', [])
-    kwargs = invocation.get('kwargs', {})
-    globals()[function](*args, **kwargs)
-
-
 if __name__ == '__main__':
-    _main()
+    configure()
