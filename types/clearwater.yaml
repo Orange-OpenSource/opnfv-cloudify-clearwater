@@ -11,7 +11,7 @@
 
 node_types:
   # Global type for clearwater nodes (create local_config file)
-  clearwater.nodes.config:
+  clearwater.nodes.base.config:
     derived_from: cloudify.nodes.SoftwareComponent
     properties:
       private_domain:
@@ -30,7 +30,7 @@ node_types:
 
   # Specific types for clearwater nodes (install role etc.)
   clearwater.nodes.sprout:
-    derived_from: clearwater.nodes.config
+    derived_from: clearwater.nodes.base.config
     interfaces:
       cloudify.interfaces.lifecycle:
         configure: scripts/clearwater/sprout/install-sprout.sh
@@ -38,7 +38,7 @@ node_types:
         delete: scripts/clearwater/other/remove-cluster-node.sh
 
   clearwater.nodes.bono:
-    derived_from: clearwater.nodes.config
+    derived_from: clearwater.nodes.base.config
     interfaces:
       cloudify.interfaces.lifecycle:
         configure: scripts/clearwater/bono/install-bono.sh
@@ -46,7 +46,7 @@ node_types:
         delete: scripts/clearwater/other/remove-cluster-node.sh
 
   clearwater.nodes.vellum:
-    derived_from: clearwater.nodes.config
+    derived_from: clearwater.nodes.base.config
     interfaces:
       cloudify.interfaces.lifecycle:
         configure: scripts/clearwater/vellum/install-vellum.sh
@@ -91,7 +91,7 @@ node_types:
                 always_use_pty: true
 
   clearwater.nodes.homer:
-    derived_from: clearwater.nodes.config
+    derived_from: clearwater.nodes.base.config
     interfaces:
       cloudify.interfaces.lifecycle:
         configure: scripts/clearwater/homer/install-homer.sh
@@ -99,7 +99,7 @@ node_types:
         delete: scripts/clearwater/other/remove-cluster-node.sh
 
   clearwater.nodes.dime:
-    derived_from: clearwater.nodes.config
+    derived_from: clearwater.nodes.base.config
     interfaces:
       cloudify.interfaces.lifecycle:
         configure: scripts/clearwater/dime/install-dime.sh
@@ -107,7 +107,7 @@ node_types:
         delete: scripts/clearwater/other/remove-cluster-node.sh
 
   clearwater.nodes.ellis:
-    derived_from: clearwater.nodes.config
+    derived_from: clearwater.nodes.base.config
     interfaces:
       cloudify.interfaces.lifecycle:
         configure: scripts/clearwater/ellis/install-ellis.sh

@@ -104,14 +104,14 @@ inputs:
 
 dsl_definitions:
 
-  noha_openstack_config: &openstack_config
+  noha_openstack_config: &noha_openstack_config
     username: { get_secret: keystone_username }
     password: { get_secret: keystone_password }
     tenant_name: { get_secret: keystone_tenant_name }
     auth_url: { get_secret: keystone_url }
     region: { get_input: noha_region }
 
-  ha_openstack_config: &openstack_config
+  ha_openstack_config: &ha_openstack_config
     username: { get_secret: keystone_username }
     password: { get_secret: keystone_password }
     tenant_name: { get_secret: keystone_tenant_name }
@@ -385,40 +385,6 @@ node_templates:
       - target: homer_security_group
         type: cloudify.openstack.server_connected_to_security_group
 
-  bind_port:
-    type: cloudify.openstack.nodes.Port
-    properties:
-      use_external_resource: true
-      openstack_config: *central_openstack_config
-    interfaces:
-      cloudify.interfaces.lifecycle:
-        create:
-          inputs:
-            args:
-              port_ip: { get_attribute: [ bind_host, ip ] }
-    relationships:
-      - type: cloudify.relationships.connected_to
-        target: bind_host
-      - type: cloudify.openstack.port_connected_to_floating_ip
-        target: bind_floatingip
-
-  bind_host:
-    type: clearwater.nodes.MonitoredServer
-    capabilities:
-      scalable:
-        properties:
-          min_instances: 1
-          max_instances: 1
-    relationships:
-      - type: cloudify.openstack.server_connected_to_keypair
-        target: keypair
-
-      - target: base_security_group
-        type: cloudify.openstack.server_connected_to_security_group
-
-      - target: bind_security_group
-        type: cloudify.openstack.server_connected_to_security_group
-
 
   site_management_host:
     type: cloudify.openstack.nodes.Server
@@ -494,7 +460,7 @@ node_templates:
       cloudify.interfaces.lifecycle:
         create:
           inputs:
-            public_ip: { get_attribute: [ bono_ip, floating_ip_address ] }
+            public_ip: { get_attribute: [ bono_floatingip, floating_ip_address ] }
     relationships:
       - type: cloudify.relationships.contained_in
         target: bono_host
@@ -530,7 +496,7 @@ node_templates:
       cloudify.interfaces.lifecycle:
         create:
           inputs:
-            public_ip: { get_attribute: [ ellis_ip, floating_ip_address ] }
+            public_ip: { get_attribute: [ ellis_floatingip, floating_ip_address ] }
     relationships:
       - type: cloudify.relationships.contained_in
         target: ellis_host
@@ -772,15 +738,8 @@ node_templates:
           port: 443
           protocol: tcp
 
-  # Declare floating IP for bono, bind and ellis nodes
+  # Declare floating IP for bono and ellis nodes
   bono_floatingip:
-    type: cloudify.openstack.nodes.FloatingIP
-    properties:
-      openstack_config: *central_openstack_config
-      floatingip:
-        floating_network_name: { get_input: external_network_name }
-
-  bind_floatingip:
     type: cloudify.openstack.nodes.FloatingIP
     properties:
       openstack_config: *central_openstack_config
