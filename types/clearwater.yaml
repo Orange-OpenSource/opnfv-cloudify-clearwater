@@ -8,6 +8,20 @@
 # which accompanies this distribution, and is available at
 # http://www.apache.org/licenses/LICENSE-2.0
 ########################################################################
+inputs:
+
+  local_site_name:
+    type: string
+    description: Name of local site for multisite configuration
+
+  remote_site_name:
+    type: string
+    description: Name of remote site for multisite configuration
+
+  release:
+    type: string
+    default: stable
+    description: Clearwater release
 
 node_types:
   # Global type for clearwater nodes (create local_config file)
@@ -18,8 +32,19 @@ node_types:
         description: Private domain for clearwater internal load-balancing
         type: string
       release:
-        description: Release number of clearwater
+        default: { get_input: release }
         type: string
+      secret_code:
+        type: string
+        default: secret
+      etcd_ip:
+        type: string
+      local_site_name:
+        type: string
+        default: { get_input: local_site_name }
+      remote_site_name:
+        type: string
+        default: { get_input: remote_site_name }
     interfaces:
       cloudify.interfaces.lifecycle:
         create:

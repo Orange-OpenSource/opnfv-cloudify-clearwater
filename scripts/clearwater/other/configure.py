@@ -46,15 +46,17 @@ def configure(subject=None):
 
     config = subject.node.properties.copy()
     role = re.split(r'_',name)[0]
-    if role=="config" and config['local_site_name'] == 'site1':
-        etcd_ip = "$(ip addr show eth0 | grep 'inet\\b' | awk '{print $2}' | cut -d/ -f1)"
+    etcd_ips = []
+    if role=="config" and config['local_site_name'] == 'site2':
+        etcd_ips.append(config['etcd_ip'])
+        etcd_ips.append(config['remote_etcd_ip'])
     else:
-        etcd_ip = config['etcd_ip']
+        etcd_ips.append(config['etcd_ip'])
     config.update(dict(
         name=name.replace('_','-'),
         host_ip=subject.instance.host_ip,
         public_ip=inputs['public_ip'],
-        etcd_ips=[etcd_ip]))
+        etcd_ips=etcd_ips))
 
 
     ctx.logger.debug('Rendering the Jinja2 template to {0}.'.format(CONFIG_PATH))

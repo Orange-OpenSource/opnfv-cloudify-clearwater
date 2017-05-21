@@ -49,33 +49,34 @@ inputs:
 
   network_name:
     description: Openstack network name the new server will be connected to
-    default: net2
+    default: IMS-net2
 
   external_network_name:
     type: string
     description: Network that will be the floating IP
 
-  private_domain:
+  ellis_network_name:
+    description: Openstack network name the new server will be connected to
+    default: IMS-net1
+
+  ellis_external_network_name:
+    type: string
+    description: Network that will be the floating IP
+    default: ext-net1
+
+  local_private_domain:
     type: string
     default: site1.clearwater.local
+    description: Sip domain for Internal communication
+
+  remote_private_domain:
+    type: string
+    default: site2.clearwater.local
     description: Sip domain for Internal communication
 
   public_domain:
     type: string
     description: Sip domain for sip users and bono load-balancing
-
-  release:
-    type: string
-    default: stable
-    description: Clearwater release
-
-  local_site_name:
-    type: string
-    description: Name of local site for multisite configuration
-
-  remote_site_name:
-    type: string
-    description: Name of remote site for multisite configuration
 
   ha_region:
     default: ''
@@ -178,25 +179,17 @@ node_types:
     properties:
       private_domain:
         type: string
-        default: { get_input: private_domain }
+        default: { get_input: local_private_domain }
+      remote_private_domain:
+        type: string
+        default: { get_input: remote_private_domain }
       public_domain:
         type: string
         default: { get_input: public_domain }
-      secret_code:
-        type: string
-        default: secret
-      local_site_name:
-        type: string
-        default: { get_input: local_site_name }
-      remote_site_name:
-        type: string
-        default: { get_input: remote_site_name }
       dns_ips:
         default: { get_input: dns_ips }
-      etcd_ip:
+      remote_etcd_ip:
         default: { get_input: etcd_ip }
-      release:
-        default: { get_input: release }
 
 relationships:
   cw_base_connected_to_DNS:
@@ -208,7 +201,7 @@ relationships:
           executor: central_deployment_agent
           inputs:
             domain:
-              default: { get_input: private_domain }
+              default: { get_input: local_private_domain }
             record_ip:
               default: ""
             other_roles:
@@ -220,7 +213,7 @@ relationships:
           executor: central_deployment_agent
           inputs:
             domain:
-              default: { get_input: private_domain }
+              default: { get_input: local_private_domain }
             record_ip:
               default: ""
             other_roles:
@@ -327,12 +320,10 @@ node_templates:
           max_instances: { get_input: with_ellis }
     properties:
       openstack_config: *noha_openstack_config
+      management_network_name: { get_input: ellis_network_name }
     relationships:
       - type: cloudify.openstack.server_connected_to_keypair
         target: keypair
-
-      - target: base_security_group
-        type: cloudify.openstack.server_connected_to_security_group
 
       - target: ellis_security_group
         type: cloudify.openstack.server_connected_to_security_group
@@ -419,8 +410,8 @@ node_templates:
   sprout:
     type: clearwater.nodes.sprout
     properties:
-      private_domain: clearwater.local
-      release: { get_input: release }
+      private_domain: { get_input: local_private_domain }
+      etcd_ip: { get_attribute: [ site_management_host, ip ] }
     relationships:
       - type: cloudify.relationships.contained_in
         target: sprout_host
@@ -454,8 +445,8 @@ node_templates:
   bono:
     type: clearwater.nodes.bono
     properties:
-      private_domain: clearwater.local
-      release: { get_input: release }
+      private_domain: { get_input: local_private_domain }
+      etcd_ip: { get_attribute: [ site_management_host, ip ] }
     interfaces:
       cloudify.interfaces.lifecycle:
         create:
@@ -490,8 +481,8 @@ node_templates:
   ellis:
     type: clearwater.nodes.ellis
     properties:
-      private_domain: clearwater.local
-      release: { get_input: release }
+      private_domain: { get_input: local_private_domain }
+      etcd_ip: { get_attribute: [ site_management_host, ip ] }
     interfaces:
       cloudify.interfaces.lifecycle:
         create:
@@ -516,8 +507,8 @@ node_templates:
   dime:
     type: clearwater.nodes.dime
     properties:
-      private_domain: clearwater.local
-      release: { get_input: release }
+      private_domain: { get_input: local_private_domain }
+      etcd_ip: { get_attribute: [ site_management_host, ip ] }
     relationships:
       - type: cloudify.relationships.contained_in
         target: dime_host
@@ -527,8 +518,8 @@ node_templates:
   vellum:
     type: clearwater.nodes.vellum
     properties:
-      private_domain: clearwater.local
-      release: { get_input: release }
+      private_domain: { get_input: local_private_domain }
+      etcd_ip: { get_attribute: [ site_management_host, ip ] }
     relationships:
       - type: cloudify.relationships.contained_in
         target: vellum_host
@@ -538,8 +529,8 @@ node_templates:
   homer:
     type: clearwater.nodes.homer
     properties:
-      private_domain: clearwater.local
-      release: { get_input: release }
+      private_domain: { get_input: local_private_domain }
+      etcd_ip: { get_attribute: [ site_management_host, ip ] }
     relationships:
       - type: cloudify.relationships.contained_in
         target: homer_host
@@ -557,12 +548,14 @@ node_templates:
     properties:
       dns_ips: { get_input: dns_ips }
       domains:
-        - { get_input: private_domain }
+        - { get_input: local_private_domain }
         - { get_input: public_domain }
       install_agent: false
 
   config:
     type: clearwater.nodes.config
+    properties:
+      etcd_ip: { get_attribute: [ site_management_host, ip ] }
     interfaces:
       cloudify.interfaces.lifecycle:
         configure: scripts/clearwater/other/install-etcd.sh
@@ -588,6 +581,10 @@ node_templates:
         - remote_ip_prefix: 0.0.0.0/0
           port: 161
           protocol: udp
+        - remote_ip_prefix: 0.0.0.0/0
+          port_range_min: 0
+          port_range_max: 0
+          protocol: icmp
 
   bono_security_group:
     type: cloudify.openstack.nodes.SecurityGroup
@@ -737,6 +734,10 @@ node_templates:
         - remote_ip_prefix: 0.0.0.0/0
           port: 443
           protocol: tcp
+        - remote_ip_prefix: 0.0.0.0/0
+          port_range_min: 0
+          port_range_max: 0
+          protocol: icmp
 
   # Declare floating IP for bono and ellis nodes
   bono_floatingip:
@@ -756,7 +757,7 @@ node_templates:
     properties:
       openstack_config: *central_openstack_config
       floatingip:
-        floating_network_name: { get_input: external_network_name }
+        floating_network_name: { get_input: ellis_external_network_name }
 
 
 groups:
