@@ -23,6 +23,10 @@ inputs:
     default: stable
     description: Clearwater release
 
+  etcd_ip:
+    type: string
+    description: ip of etcd cluster
+
 node_types:
   # Global type for clearwater nodes (create local_config file)
   clearwater.nodes.base.config:
@@ -39,6 +43,8 @@ node_types:
         default: secret
       etcd_ip:
         type: string
+      remote_etcd_ip:
+        default: { get_input: etcd_ip }
       local_site_name:
         type: string
         default: { get_input: local_site_name }

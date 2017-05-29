@@ -4,6 +4,7 @@ sprout_hostname=sprout.{{private_domain}}
 chronos_hostname={{host_ip}}:7253
 hs_hostname=hs.{{private_domain}}:8888
 hs_provisioning_hostname=hs-prov.{{private_domain}}:8889
+remote_site_names={{local_site_name}},{{remote_site_name}}
 sprout_impi_store=vellum.{{private_domain}}
 sprout_registration_store="{{local_site_name}}=vellum.{{private_domain}},{{remote_site_name}}=vellum.{{remote_private_domain}}"
 cassandra_hostname=vellum.{{private_domain}}

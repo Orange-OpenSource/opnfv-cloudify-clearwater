@@ -45,13 +45,13 @@ def configure(subject=None):
     name = ctx.instance.id
 
     config = subject.node.properties.copy()
-    role = re.split(r'_',name)[0]
+    role = re.split(r'_', name)[0]
     etcd_ips = []
-    if role=="config" and config['local_site_name'] == 'site2':
-        etcd_ips.append(config['etcd_ip'])
+
+    if config['remote_etcd_ip'] != "":
         etcd_ips.append(config['remote_etcd_ip'])
-    else:
-        etcd_ips.append(config['etcd_ip'])
+    etcd_ips.append(config['etcd_ip'])
+
     config.update(dict(
         name=name.replace('_','-'),
         host_ip=subject.instance.host_ip,

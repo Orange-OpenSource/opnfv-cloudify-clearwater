@@ -94,10 +94,6 @@ inputs:
     default: []
     description: ips of desginate api and dns server
 
-  etcd_ip:
-    type: string
-    description: ip of etcd cluster
-
   with_ellis:
     type: integer
     description: 1 for true 0 for false
@@ -188,8 +184,6 @@ node_types:
         default: { get_input: public_domain }
       dns_ips:
         default: { get_input: dns_ips }
-      remote_etcd_ip:
-        default: { get_input: etcd_ip }
 
 relationships:
   cw_base_connected_to_DNS:
@@ -294,8 +288,7 @@ node_templates:
     capabilities:
       scalable:
         properties:
-          min_instances: { get_input: with_ellis }
-          max_instances: { get_input: with_ellis }
+          default_instances: { get_input: with_ellis }
     properties:
       use_external_resource: true
       openstack_config: *central_openstack_config
@@ -316,8 +309,7 @@ node_templates:
     capabilities:
       scalable:
         properties:
-          min_instances: { get_input: with_ellis }
-          max_instances: { get_input: with_ellis }
+          default_instances: { get_input: with_ellis }
     properties:
       openstack_config: *noha_openstack_config
       management_network_name: { get_input: ellis_network_name }
@@ -714,8 +706,7 @@ node_templates:
     capabilities:
       scalable:
         properties:
-          min_instances: { get_input: with_ellis }
-          max_instances: { get_input: with_ellis }
+          default_instances: { get_input: with_ellis }
     properties:
       openstack_config: *noha_openstack_config
       security_group:
@@ -752,8 +743,7 @@ node_templates:
     capabilities:
       scalable:
         properties:
-          min_instances: { get_input: with_ellis }
-          max_instances: { get_input: with_ellis }
+          default_instances: { get_input: with_ellis }
     properties:
       openstack_config: *central_openstack_config
       floatingip:
