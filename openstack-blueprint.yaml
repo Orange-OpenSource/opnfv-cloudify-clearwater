@@ -55,11 +55,11 @@ inputs:
     type: string
     description: Network that will be the floating IP
 
-  ellis_network_name:
+  noha_network_name:
     description: Openstack network name the new server will be connected to
     default: IMS-net1
 
-  ellis_external_network_name:
+  noha_external_network_name:
     type: string
     description: Network that will be the floating IP
     default: ext-net1
@@ -89,10 +89,6 @@ inputs:
   central_region:
     default: ''
     type: string
-
-  dns_ips:
-    default: []
-    description: ips of desginate api and dns server
 
   with_ellis:
     type: integer
@@ -182,8 +178,7 @@ node_types:
       public_domain:
         type: string
         default: { get_input: public_domain }
-      dns_ips:
-        default: { get_input: dns_ips }
+
 
 relationships:
   cw_base_connected_to_DNS:
@@ -312,15 +307,16 @@ node_templates:
           default_instances: { get_input: with_ellis }
     properties:
       openstack_config: *noha_openstack_config
-      management_network_name: { get_input: ellis_network_name }
+      management_network_name: { get_input: noha_network_name }
     relationships:
       - type: cloudify.openstack.server_connected_to_keypair
         target: keypair
-
+      - target: base_security_group_noha
+        type: cloudify.openstack.server_connected_to_security_group
       - target: ellis_security_group
         type: cloudify.openstack.server_connected_to_security_group
 
-  vellum_host:
+  homestead_host:
     type: clearwater.nodes.MonitoredServer
     capabilities:
       scalable:
@@ -333,10 +329,10 @@ node_templates:
       - target: base_security_group
         type: cloudify.openstack.server_connected_to_security_group
 
-      - target: vellum_security_group
+      - target: homestead_security_group
         type: cloudify.openstack.server_connected_to_security_group
 
-  dime_host:
+  ralf_host:
     type: clearwater.nodes.MonitoredServer
     capabilities:
       scalable:
@@ -349,7 +345,7 @@ node_templates:
       - target: base_security_group
         type: cloudify.openstack.server_connected_to_security_group
 
-      - target: dime_security_group
+      - target: ralf_security_group
         type: cloudify.openstack.server_connected_to_security_group
 
   homer_host:
@@ -382,8 +378,8 @@ node_templates:
           key: { get_property: [ keypair, private_key_path ] }
       image: { get_input: image_id }
       flavor: { get_input: flavor_id }
-      management_network_name: { get_input: network_name }
-      openstack_config: *ha_openstack_config
+      management_network_name: { get_input: noha_network_name }
+      openstack_config: *noha_openstack_config
     interfaces:
       cloudify.interfaces.monitoring_agent:
         install:
@@ -496,25 +492,25 @@ node_templates:
                 domain: { get_input: public_domain }
                 record_ip: { get_attribute: [ ellis_floatingip, floating_ip_address ]}
 
-  dime:
-    type: clearwater.nodes.dime
+  ralf:
+    type: clearwater.nodes.ralf
     properties:
       private_domain: { get_input: local_private_domain }
       etcd_ip: { get_attribute: [ site_management_host, ip ] }
     relationships:
       - type: cloudify.relationships.contained_in
-        target: dime_host
+        target: ralf_host
       - type: cw_base_connected_to_DNS
         target: dns
 
-  vellum:
-    type: clearwater.nodes.vellum
+  homestead:
+    type: clearwater.nodes.homestead
     properties:
       private_domain: { get_input: local_private_domain }
       etcd_ip: { get_attribute: [ site_management_host, ip ] }
     relationships:
       - type: cloudify.relationships.contained_in
-        target: vellum_host
+        target: homestead_host
       - type: cw_base_connected_to_DNS
         target: dns
 
@@ -563,6 +559,25 @@ node_templates:
       security_group:
         name: clearwater-sg_base
         description: SSH
+      rules:
+        - remote_ip_prefix: 0.0.0.0/0
+          port: 22
+        - remote_ip_prefix: 0.0.0.0/0
+          port: 4000
+        - remote_ip_prefix: 0.0.0.0/0
+          port: 2380
+        - remote_ip_prefix: 0.0.0.0/0
+          port: 161
+          protocol: udp
+        - remote_ip_prefix: 0.0.0.0/0
+          port_range_min: 0
+          port_range_max: 0
+          protocol: icmp
+
+  base_security_group_noha:
+    type: cloudify.openstack.nodes.SecurityGroup
+    properties:
+      openstack_config: *noha_openstack_config
       rules:
         - remote_ip_prefix: 0.0.0.0/0
           port: 22
@@ -638,40 +653,7 @@ node_templates:
         description: memcached Chronos 0MQ
       rules:
         - remote_ip_prefix: 0.0.0.0/0
-          port: 9888
-          protocol: tcp
-
-  dime_security_group:
-    type: cloudify.openstack.nodes.SecurityGroup
-    properties:
-      openstack_config: *ha_openstack_config
-      security_group:
-        name: clearwater-sg_dime
-        description: memcached Chronos REST
-      rules:
-        - remote_ip_prefix: 0.0.0.0/0
-          port: 8888
-          protocol: tcp
-        - remote_ip_prefix: 0.0.0.0/0
-          port: 8889
-          protocol: tcp
-        - remote_ip_prefix: 0.0.0.0/0
-          port: 10888
-          protocol: tcp
-
-  vellum_security_group:
-    type: cloudify.openstack.nodes.SecurityGroup
-    properties:
-      openstack_config: *ha_openstack_config
-      security_group:
-        name: clearwater-sg_vellum
-        description: REST Cassandra 0MQ
-      rules:
-        - remote_ip_prefix: 0.0.0.0/0
           port: 11211
-          protocol: tcp
-        - remote_ip_prefix: 0.0.0.0/0
-          port: 11311
           protocol: tcp
         - remote_ip_prefix: 0.0.0.0/0
           port: 7253
@@ -681,6 +663,50 @@ node_templates:
           protocol: tcp
         - remote_ip_prefix: 0.0.0.0/0
           port: 9160
+          protocol: tcp
+        - remote_ip_prefix: 0.0.0.0/0
+          port: 9888
+          protocol: tcp
+        - remote_ip_prefix: 0.0.0.0/0
+          port: 6666
+        - remote_ip_prefix: 0.0.0.0/0
+          port: 443
+          protocol: tcp
+
+  ralf_security_group:
+    type: cloudify.openstack.nodes.SecurityGroup
+    properties:
+      openstack_config: *ha_openstack_config
+      security_group:
+        name: clearwater-sg_ralf
+        description: memcached Chronos REST
+      rules:
+        - remote_ip_prefix: 0.0.0.0/0
+          port: 11211
+          protocol: tcp
+        - remote_ip_prefix: 0.0.0.0/0
+          port: 7253
+          protocol: tcp
+        - remote_ip_prefix: 0.0.0.0/0
+          port: 10888
+          protocol: tcp
+
+  homestead_security_group:
+    type: cloudify.openstack.nodes.SecurityGroup
+    properties:
+      openstack_config: *ha_openstack_config
+      security_group:
+        name: clearwater-sg_homestead
+        description: REST Cassandra 0MQ
+      rules:
+        - remote_ip_prefix: 0.0.0.0/0
+          port: 8888
+          protocol: tcp
+        - remote_ip_prefix: 0.0.0.0/0
+          port: 8889
+          protocol: tcp
+        - remote_ip_prefix: 0.0.0.0/0
+          port: 7000
           protocol: tcp
         - remote_ip_prefix: 0.0.0.0/0
           port_range_min: 6667
@@ -698,8 +724,10 @@ node_templates:
           port: 7888
           protocol: tcp
         - remote_ip_prefix: 0.0.0.0/0
-          port: 9160
+          port: 7000
           protocol: tcp
+        - remote_ip_prefix: 0.0.0.0/0
+          port: 6665
 
   ellis_security_group:
     type: cloudify.openstack.nodes.SecurityGroup
@@ -714,21 +742,11 @@ node_templates:
         description: Web UI
       rules:
         - remote_ip_prefix: 0.0.0.0/0
-          port: 22
-        - remote_ip_prefix: 0.0.0.0/0
-          port: 4000
-        - remote_ip_prefix: 0.0.0.0/0
-          port: 2380
-        - remote_ip_prefix: 0.0.0.0/0
           port: 80
           protocol: tcp
         - remote_ip_prefix: 0.0.0.0/0
           port: 443
           protocol: tcp
-        - remote_ip_prefix: 0.0.0.0/0
-          port_range_min: 0
-          port_range_max: 0
-          protocol: icmp
 
   # Declare floating IP for bono and ellis nodes
   bono_floatingip:
@@ -747,12 +765,12 @@ node_templates:
     properties:
       openstack_config: *central_openstack_config
       floatingip:
-        floating_network_name: { get_input: ellis_external_network_name }
+        floating_network_name: { get_input: noha_external_network_name }
 
 
 groups:
   bono_group:
-    members: [bono_host, bono_floatingip]
+    members: [bono_host, bono_port, bono_floatingip]
 
 policies:
   scale_bono:

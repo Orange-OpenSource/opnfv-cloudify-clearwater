@@ -2,7 +2,6 @@
 
 ctx logger debug "${COMMAND}"
 
-
 sudo mkdir -p /etc/chronos
 
 echo '
@@ -21,7 +20,6 @@ enabled = true
 [exceptions]
 max_ttl = 600' | sudo tee --append /etc/chronos/chronos.conf
 
-
 release=$(ctx node properties release)
 
 ctx logger info "Configure the APT software source"
@@ -37,11 +35,9 @@ if [ ! -f /etc/apt/sources.list.d/clearwater.list ]
 fi
 sudo apt-get update
 
-ctx logger info "Installing vellum packages and other clearwater packages"
-set +e
-sudo DEBIAN_FRONTEND=noninteractive  apt-get -o Dpkg::Options::=--force-confdef -o Dpkg::Options::=--force-confnew install vellum --yes --force-yes
+ctx logger info "Installing ralf packages and other clearwater packages"
+sudo DEBIAN_FRONTEND=noninteractive apt-get install ralf --yes --force-yes -o DPkg::options::=--force-confnew
 sudo DEBIAN_FRONTEND=noninteractive  apt-get install clearwater-management --yes --force-yes
-set -e
 ctx logger info "The installation packages is done correctly"
 
 ctx logger info "Use the DNS server"

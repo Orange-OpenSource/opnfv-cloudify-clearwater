@@ -20,12 +20,16 @@ inputs:
 
   release:
     type: string
-    default: stable
+    default: repo107
     description: Clearwater release
 
   etcd_ip:
     type: string
     description: ip of etcd cluster
+
+  dns_ips:
+    default: []
+    description: ips of desginate api and dns server
 
 node_types:
   # Global type for clearwater nodes (create local_config file)
@@ -51,6 +55,8 @@ node_types:
       remote_site_name:
         type: string
         default: { get_input: remote_site_name }
+      dns_ips:
+        default: { get_input: dns_ips }
     interfaces:
       cloudify.interfaces.lifecycle:
         create:
@@ -76,50 +82,13 @@ node_types:
         stop: scripts/clearwater/bono/stop-bono.sh
         delete: scripts/clearwater/other/remove-cluster-node.sh
 
-  clearwater.nodes.vellum:
+  clearwater.nodes.homestead:
     derived_from: clearwater.nodes.base.config
     interfaces:
       cloudify.interfaces.lifecycle:
-        configure: scripts/clearwater/vellum/install-vellum.sh
-        start: scripts/clearwater/vellum/start-vellum.sh
-        stop: scripts/clearwater/vellum/stop-vellum.sh
+        configure: scripts/clearwater/homestead/install-homestead.sh
+        stop: scripts/clearwater/homestead/stop-homestead.sh
         delete: scripts/clearwater/other/remove-cluster-node.sh
-
-
-  clearwater.nodes.vellum.provisioning:
-    derived_from: cloudify.nodes.Compute
-    properties:
-      agent_config:
-        default:
-          install_method: none
-      ssh_user:
-        type: string
-      ssh_key:
-        type: string
-      vellum_ip:
-        type: string
-      number_of_subscribers:
-        type: integer
-      public_domain:
-        description: Sip domain
-        type: string
-    interfaces:
-      cloudify.interfaces.lifecycle:
-        create:
-          implementation: fabric.fabric_plugin.tasks.run_script
-          inputs:
-            script_path:
-              default: scripts/clearwater/vellum/provisioning_numbers.sh
-            number_of_subscribers:
-              default: { get_property: [SELF, number_of_subscribers]}
-            public_domain:
-              default: { get_property: [SELF, public_domain]}
-            fabric_env:
-              default:
-                user: { get_property: [SELF, ssh_user] }
-                key_filename: { get_property: [SELF, ssh_key] }
-                host_string: { get_property: [SELF, vellum_ip] }
-                always_use_pty: true
 
   clearwater.nodes.homer:
     derived_from: clearwater.nodes.base.config
@@ -129,12 +98,12 @@ node_types:
         stop: scripts/clearwater/homer/stop-homer.sh
         delete: scripts/clearwater/other/remove-cluster-node.sh
 
-  clearwater.nodes.dime:
+  clearwater.nodes.ralf:
     derived_from: clearwater.nodes.base.config
     interfaces:
       cloudify.interfaces.lifecycle:
-        configure: scripts/clearwater/dime/install-dime.sh
-        stop: scripts/clearwater/dime/stop-dime.sh
+        configure: scripts/clearwater/ralf/install-ralf.sh
+        stop: scripts/clearwater/ralf/stop-ralf.sh
         delete: scripts/clearwater/other/remove-cluster-node.sh
 
   clearwater.nodes.ellis:

@@ -50,7 +50,8 @@ def configure(subject=None):
 
     if config['remote_etcd_ip'] != "":
         etcd_ips.append(config['remote_etcd_ip'])
-    etcd_ips.append(config['etcd_ip'])
+    if config['local_site_name'] != "site2":
+        etcd_ips.append(config['etcd_ip'])
 
     config.update(dict(
         name=name.replace('_','-'),

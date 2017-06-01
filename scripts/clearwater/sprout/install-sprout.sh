@@ -2,6 +2,24 @@
 
 ctx logger debug "${COMMAND}"
 
+sudo mkdir -p /etc/chronos
+
+echo '
+[http]
+bind-address = $(hostname -I)
+bind-port = 7253
+threads = 50
+
+[logging]
+folder = /var/log/chronos
+level = 2
+
+[alarms]
+enabled = true
+
+[exceptions]
+max_ttl = 600' | sudo tee --append /etc/chronos/chronos.conf
+
 release=$(ctx node properties release)
 
 ctx logger info "Configure the APT software source"
