@@ -227,7 +227,7 @@ node_templates:
     capabilities:
       scalable:
         properties:
-          default_instances: 1
+          default_instances: 2
           min_instances: 1
     relationships:
       - type: cloudify.openstack.server_connected_to_keypair
@@ -241,6 +241,9 @@ node_templates:
 
       - target: sprout_security_group
         type: cloudify.openstack.server_connected_to_security_group
+
+      - type: cloudify.relationships.connected_to
+        target: homer_host
 
   bono_port:
     type: cloudify.openstack.nodes.Port
@@ -277,6 +280,9 @@ node_templates:
 
       - target: internal_sip_security_group
         type: cloudify.openstack.server_connected_to_security_group
+
+      - type: cloudify.relationships.connected_to
+        target: sprout_host
 
   ellis_port:
     type: cloudify.openstack.nodes.Port
@@ -315,12 +321,15 @@ node_templates:
         type: cloudify.openstack.server_connected_to_security_group
       - target: ellis_security_group
         type: cloudify.openstack.server_connected_to_security_group
+      - type: cloudify.relationships.connected_to
+        target: bono_host
 
   homestead_host:
     type: clearwater.nodes.MonitoredServer
     capabilities:
       scalable:
         properties:
+          default_instances: 2
           min_instances: 1
     relationships:
       - type: cloudify.openstack.server_connected_to_keypair
@@ -331,13 +340,16 @@ node_templates:
 
       - target: homestead_security_group
         type: cloudify.openstack.server_connected_to_security_group
+      - type: cloudify.relationships.connected_to
+        target: site_management_host
 
   ralf_host:
     type: clearwater.nodes.MonitoredServer
     capabilities:
       scalable:
         properties:
-          min_instances: 1
+          default_instances: 0
+          min_instances: 0
     relationships:
       - type: cloudify.openstack.server_connected_to_keypair
         target: keypair
@@ -347,12 +359,15 @@ node_templates:
 
       - target: ralf_security_group
         type: cloudify.openstack.server_connected_to_security_group
+      - type: cloudify.relationships.connected_to
+        target: bono_host
 
   homer_host:
     type: clearwater.nodes.MonitoredServer
     capabilities:
       scalable:
         properties:
+          default_instances: 2
           min_instances: 1
     relationships:
       - type: cloudify.openstack.server_connected_to_keypair
@@ -363,6 +378,8 @@ node_templates:
 
       - target: homer_security_group
         type: cloudify.openstack.server_connected_to_security_group
+      - type: cloudify.relationships.connected_to
+        target: homestead_host
 
 
   site_management_host:
@@ -770,11 +787,11 @@ node_templates:
 
 groups:
   bono_group:
-    members: [bono_host, bono_port, bono_floatingip]
+    members: [bono_floatingip, bono_host, bono_port]
 
 policies:
   scale_bono:
     type: cloudify.policies.scaling
     properties:
-      default_instances: 1
+      default_instances: 2
     targets: [bono_group]
