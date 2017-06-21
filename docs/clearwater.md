@@ -7,7 +7,7 @@ Clearwater is IMS in the Cloud. [See](http://www.projectclearwater.org/about-cle
 The Clearwater architecture is designed for deployment on cloud environments. It sourced on the best practice  IT software architecture (Load-balancing state-less, easy clustering etc..). [See](http://www.projectclearwater.org/technical/clearwater-architecture/) more about the software architecture of Clearwater !
 
 
-![Clearwater software architecture](clearwater-architecture.png)
+![Clearwater software architecture](clearwater-architecture-v2.png)
 
 ## Deployment
 
