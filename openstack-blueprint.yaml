@@ -587,14 +587,14 @@ node_templates:
   bono_floatingip:
     type: cloudify.openstack.nodes.FloatingIP
     properties:
-      openstack_config: *central_openstack_config
+      openstack_config: *openstack_config
       floatingip:
         floating_network_name: { get_input: external_network_name }
 
   bind_floatingip:
     type: cloudify.openstack.nodes.FloatingIP
     properties:
-      openstack_config: *central_openstack_config
+      openstack_config: *openstack_config
       floatingip:
         floating_network_name: { get_input: external_network_name }
 
@@ -605,7 +605,7 @@ node_templates:
         properties:
           default_instances: { get_input: with_ellis }
     properties:
-      openstack_config: *central_openstack_config
+      openstack_config: *openstack_config
       floatingip:
         floating_network_name: { get_input: external_network_name }
 
