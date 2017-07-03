@@ -23,7 +23,7 @@ Download **blueprint** :
 cd ~/cloudify/cloudify-manager/
 mkdir blueprints
 cd blueprints
-git clone -b v1.2 https://github.com/Orange-OpenSource/opnfv-cloudify-clearwater.git
+git clone -b master https://github.com/Orange-OpenSource/opnfv-cloudify-clearwater.git
 ```
 Upload **blueprint** on the orchestrator :
 ```
@@ -33,13 +33,6 @@ cfy blueprints upload -b clearwater -p openstack-blueprint.yaml
 
 ### Create and launch deployment
 
-**Warning !** : For the moment, cloudify doesn't support input parameters to specify the number of node instance to deploy. See the [post](https://groups.google.com/forum/#!topic/cloudify-users/wGbr9kco0qM) on cloudify forum ! 
-
-By default 2 sprout node and 1 node of each other type will be deployed. If you want change it, you can edit deploy: instance on blueprint definition or scale your deployment after launch... 
-
-
-
-
 Before launch the **deployment**, it must be created in cloudify.
 
 For that, must be specified the deployment **inputs parameters**.
@@ -48,13 +41,21 @@ A **template** file already exists, you can copy it and complete it to fit with 
 cp inputs/openstack.yaml.template inputs/inputs.yaml
 vi inputs/inputs.yaml
 ```
-Bellow an example of input.yaml file configurations for [CloudWatt](https://www.cloudwatt.com/en/) platform. CloudWatt is a public OpenStack cloud made in France. You can help with this example to generate your configuration file for your OpenStack platform.
+Bellow an example of input.yaml file configurations:
 ```yaml
-image_id: 'ae3082cb-fac1-46b1-97aa-507aaa8f184f'      # OS image ID (Ubuntu 14.04)
-flavor_id: '17'                                      # Flavor ID (~ 2 Go RAM)
-external_network_name: 'public'                     # external network on Openstack
-agent_user: 'cloud'                                 # By default is ubuntu for ubuntu image
-public_domain: 'clearwater.pub'                     # SIP domain name
+ image_id: 'ubuntu_14.04'
+ flavor_id: 'm1.small'
+ agent_user: ubuntu
+ key_pair_name: cloudify_ims_kp
+ private_key_path: '/etc/cloudify/cloudify_ims.pem'
+ external_network_name: ''
+ public_domain: clearwater.opnfv
+ release: repo122
+ bono_cluster_size: 1
+ sprout_cluster_size: 1
+ vellum_cluster_size: 1
+ dime_cluster_size: 1
+ homer_cluster_size: 1
 ```
 
 Once the completed input file, we must **create** the deployment on orchestrator :
@@ -69,9 +70,9 @@ cfy executions start -w install -d clearwater-test
 
 During the deployment many **logs** appears on console :
 ```
-2015-08-27T14:41:03 CFY <clearwater-57> [sprout_host_c68cc.install] Sending task 'diamond_agent.tasks.install'
-2015-08-27T14:41:04 CFY <clearwater-57> [sprout_host_c68cc.install] Task started 'diamond_agent.tasks.install'
-2015-08-27T14:41:04 CFY <clearwater-57> [bind_296de.configure] Task succeeded 'script_runner.tasks.run'
+2017-06-27T14:41:03 CFY <clearwater-57> [sprout_host_c68cc.install] Sending task 'diamond_agent.tasks.install'
+2017-06-27T14:41:04 CFY <clearwater-57> [sprout_host_c68cc.install] Task started 'diamond_agent.tasks.install'
+201706-27T14:41:04 CFY <clearwater-57> [bind_296de.configure] Task succeeded 'script_runner.tasks.run'
 ```
 
 
