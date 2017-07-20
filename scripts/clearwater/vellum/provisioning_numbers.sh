@@ -1,10 +1,15 @@
-#!/bin/bash 
+#!/bin/bash
 
 ctx logger debug "${COMMAND}"
 
 
 start_number=2010000000
 end_number=$(($start_number + $number_of_subscribers))
+
+while [ ! -f /etc/clearwater/shared_config ]
+do
+  sleep 10
+done
 
 if [ ! -d "/usr/share/clearwater/crest/tools/sstable_provisioning/homestead_cache" ]; then
   cd /usr/share/clearwater/crest/tools/sstable_provisioning/
