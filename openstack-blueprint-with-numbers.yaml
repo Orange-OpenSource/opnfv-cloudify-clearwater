@@ -34,7 +34,7 @@ node_templates:
       public_domain: { get_input: public_domain }
       number_of_subscribers: { get_input: number_of_subscribers }
       ssh_user: { get_input: agent_user }
-      ssh_key: /root/.ssh/agent_key.pem
+      ssh_key: { get_input: private_key_path }
       vellum_ip: { get_attribute: [vellum_host, ip] }
     relationships:
       - type: cloudify.relationships.connected_to
