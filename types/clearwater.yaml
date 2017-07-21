@@ -1,6 +1,6 @@
 #######################################################################
 #
-#   Copyright (c) 2015 Orange
+#   Copyright (c) 2017 Orange
 #   valentin.boucher@orange.com
 #
 # All rights reserved. This program and the accompanying materials
@@ -84,6 +84,8 @@ node_types:
               default: { get_property: [SELF, number_of_subscribers]}
             public_domain:
               default: { get_property: [SELF, public_domain]}
+            local_ip:
+              default: { get_property: [SELF, vellum_ip]}
             fabric_env:
               default:
                 user: { get_property: [SELF, ssh_user] }

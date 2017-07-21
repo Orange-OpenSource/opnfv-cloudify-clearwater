@@ -17,8 +17,6 @@ if [ ! -d "/usr/share/clearwater/crest/tools/sstable_provisioning/homestead_cach
   sudo ./BulkProvision homestead-local $start_number $end_number $public_domain toto
   sudo ./BulkProvision homestead-hss $start_number $end_number $public_domain toto
   sudo ./BulkProvision homer $start_number $end_number $public_domain toto
-
-  . /etc/clearwater/config
   sstableloader -v -d ${cassandra_hostname:-$local_ip} homer/simservs
   sstableloader -v -d ${cassandra_hostname:-$local_ip} homestead_cache/impi
   sstableloader -v -d ${cassandra_hostname:-$local_ip} homestead_cache/impu
