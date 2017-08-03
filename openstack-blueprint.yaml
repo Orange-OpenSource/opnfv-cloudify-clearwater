@@ -106,6 +106,15 @@ dsl_definitions:
     tenant_name: { get_secret: keystone_tenant_name }
     auth_url: { get_secret: keystone_url }
     region: { get_input: region }
+    custom_configuration:
+      keystone_client:
+        insecure: true
+      nova_client:
+        insecure: true
+      neutron_client:
+        insecure: true
+      cinder_client:
+        insecure: true
 
 node_types:
 
