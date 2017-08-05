@@ -35,7 +35,30 @@ node_templates:
       number_of_subscribers: { get_input: number_of_subscribers }
       ssh_user: { get_input: agent_user }
       ssh_key: { get_input: private_key_path }
-      vellum_ip: { get_attribute: [vellum_host, ip] }
+      vellum_ip: { get_attribute: [vellum_prov_host, ip] }
     relationships:
       - type: cloudify.relationships.connected_to
-        target: vellum
+        target: vellum_prov
+
+  vellum_prov_host:
+    type: clearwater.nodes.MonitoredServer
+    relationships:
+      - type: cloudify.openstack.server_connected_to_keypair
+        target: keypair
+
+      - target: base_security_group
+        type: cloudify.openstack.server_connected_to_security_group
+
+      - target: vellum_security_group
+        type: cloudify.openstack.server_connected_to_security_group
+        
+  vellum_prov:
+    type: clearwater.nodes.vellum
+    properties:
+      private_domain: clearwater.local
+      release: { get_input: release }
+    relationships:
+      - type: cloudify.relationships.contained_in
+        target: vellum_prov_host
+      - type: app_connected_to_bind
+        target: bind
