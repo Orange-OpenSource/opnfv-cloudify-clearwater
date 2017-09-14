@@ -72,7 +72,7 @@ During the deployment many **logs** appears on console :
 ```
 2017-06-27T14:41:03 CFY <clearwater-57> [sprout_host_c68cc.install] Sending task 'diamond_agent.tasks.install'
 2017-06-27T14:41:04 CFY <clearwater-57> [sprout_host_c68cc.install] Task started 'diamond_agent.tasks.install'
-201706-27T14:41:04 CFY <clearwater-57> [bind_296de.configure] Task succeeded 'script_runner.tasks.run'
+2017-06-27T14:41:04 CFY <clearwater-57> [bind_296de.configure] Task succeeded 'script_runner.tasks.run'
 ```
 
 
@@ -101,16 +101,15 @@ curl -sSL https://get.docker.com/ | sh
 ```
 After that, you can download OPNFV/Functest container image :
 ```
-docker pull opnfv/functest
+docker pull opnfv/functest-vnf
 ```
 Then you can run the container :
 ```
-docker run --dns=<BIND_PUBLIC_IP> -it opnfv/functest /bin/bash
+docker run --dns=<BIND_PUBLIC_IP> -it opnfv/functest-vnf /bin/bash
 ```
 Next you can launch the signaling testing of your deployment :
 ```
-cd ~/repos/vnfs/vims-test
-source /etc/profile.d/rvm.sh
+cd /src/vims-test
 rake test[<YOUR_PUBLIC_DOMAIN_NAME>] SIGNUP_CODE=secret
 ```
 
