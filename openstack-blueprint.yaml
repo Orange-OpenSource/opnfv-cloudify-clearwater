@@ -64,10 +64,6 @@ inputs:
       Path to the private key which will be used for connecting to the server
       on the manager or machine running CLI if running in local mode.
 
-  region:
-    default: ''
-    type: string
-
   with_ellis:
     type: integer
     description: 1 for true 0 for false
@@ -105,7 +101,7 @@ dsl_definitions:
     password: { get_secret: keystone_password }
     tenant_name: { get_secret: keystone_tenant_name }
     auth_url: { get_secret: keystone_url }
-    region: { get_input: region }
+    region: { get_secret: region }
     custom_configuration:
       keystone_client:
         insecure: true
