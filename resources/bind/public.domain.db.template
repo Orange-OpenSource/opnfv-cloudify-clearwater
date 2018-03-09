@@ -7,6 +7,7 @@ $TTL 5m ; Default TTL
                                           3600       ; Expire
                                           300 )      ; Minimum TTL
 @                 3600 IN NS   ns
+ns                3600 IN A    {{host_ip}}   ; IPv4 address of BIND server
 ns                3600 IN A    {{public_ip}} ; IPv4 address of BIND server
 
 ; bono
