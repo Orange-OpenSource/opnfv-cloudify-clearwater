@@ -1,6 +1,12 @@
 #!/bin/bash -e
 
-ctx logger debug "${COMMAND}"
+log () {
+   echo "[vellum] $1"
+   output=$($@ 2>&1)
+   echo "[vellum] => $output"
+}
+
+ctx logger info "${COMMAND}"
 
 
 function wait_for_service() {
@@ -17,18 +23,22 @@ function wait_for_service() {
         started=true
         break
     else
-        ctx logger debug "Service on port ${port} has not started. waiting..."
+        ctx logger info "[vellum] Service on port ${port} has not started. waiting..."
         sleep 10
     fi
   done
   if [ ${started} = false ]; then
-      ctx logger error "Service on port ${port} failed to start. waited for a 120 seconds."
+      ctx logger error "[vellum] Service on port ${port} failed to start. waited for a 120 seconds."
       exit 1
   fi
 }
 
 local_ip=$(ctx instance host_ip)
+ctx logger info "[vellum] ${local_ip}"
 
-ctx logger info "Starting homestead node"
+log ifconfig -a
+log netstat -lnp
+
+ctx logger info "[vellum] Starting homestead node"
 
 wait_for_service ${local_ip} 7000

@@ -1,6 +1,12 @@
 #!/bin/bash -e
 
-ctx logger debug "${COMMAND}"
+log () {
+    ctx logger info "[vellum] $(echo $@ |cut -d\- -f1)"
+    output=$((time $@) 2>&1)
+    ctx logger info "[vellum] => ${output}"
+}
+
+ctx logger info "[vellum] ${COMMAND}"
 
 
 sudo mkdir -p /etc/chronos
@@ -23,8 +29,9 @@ max_ttl = 600' | sudo tee --append /etc/chronos/chronos.conf
 
 
 release=$(ctx node properties release)
+ctx logger info "[vellum] ${COMMAND}"
 
-ctx logger info "Configure the APT software source"
+ctx logger info "[vellum] Configure the APT software source"
 if [ ! -f /etc/apt/sources.list.d/clearwater.list ]
   then
     if [ $release = "stable" ]
@@ -35,17 +42,17 @@ if [ ! -f /etc/apt/sources.list.d/clearwater.list ]
     fi
     curl -L http://repo.cw-ngv.com/repo_key | sudo apt-key add -
 fi
-sudo apt-get update
+log sudo apt-get update
 
-ctx logger info "Installing vellum packages and other clearwater packages"
+ctx logger info "[vellum] Installing vellum packages and other clearwater packages"
 set +e
-sudo DEBIAN_FRONTEND=noninteractive  apt-get -o Dpkg::Options::=--force-confdef -o Dpkg::Options::=--force-confnew install vellum --yes --force-yes
-sudo DEBIAN_FRONTEND=noninteractive  apt-get install clearwater-management --yes --force-yes
+log sudo DEBIAN_FRONTEND=noninteractive  apt-get -o Dpkg::Options::=--force-confdef -o Dpkg::Options::=--force-confnew install vellum --yes --force-yes
+log sudo DEBIAN_FRONTEND=noninteractive  apt-get install clearwater-management --yes --force-yes
 set -e
-ctx logger info "The installation packages is done correctly"
+ctx logger info "[vellum] The installation packages is done correctly"
 
-ctx logger info "Use the DNS server"
+ctx logger info "[vellum] Use the DNS server"
 echo 'RESOLV_CONF=/etc/dnsmasq.resolv.conf' | sudo tee --append  /etc/default/dnsmasq
-sudo service dnsmasq force-reload
+log sudo service dnsmasq force-reload
 
-ctx logger info "Installation is done"
+ctx logger info "[vellum] Installation is done"
