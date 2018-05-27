@@ -55,7 +55,18 @@ ctx logger info "[vellum] Use the DNS server"
 echo 'RESOLV_CONF=/etc/dnsmasq.resolv.conf' | sudo tee --append  /etc/default/dnsmasq
 log sudo service dnsmasq force-reload
 
+log sudo ifconfig -a
+log sudo ps -edf
+log sudo netstat -lnp
+
 log sudo find /var/log
+log sudo cat /var/log/clearwater*.log |true
+log sudo cat /var/log/clearwater-cluster-manager/* |true
+log sudo cat /var/log/clearwater-config-manager/* |true
+log sudo cat /var/log/clearwater-etcd/* |true
+log sudo cat /var/log/clearwater-queue-manager/* |true
 log sudo cat /var/log/cassandra/system.log |true
+log sudo cat /etc/cassandra/*.xml |true
+log sudo cat /etc/cassandra/*.yaml |true
 
 ctx logger info "[vellum] Installation is done"
