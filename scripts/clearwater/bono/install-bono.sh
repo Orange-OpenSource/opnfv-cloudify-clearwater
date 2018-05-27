@@ -35,6 +35,16 @@ ctx logger info "[bono] Configure a new DNS server"
 echo 'RESOLV_CONF=/etc/dnsmasq.resolv.conf' | sudo tee --append  /etc/default/dnsmasq
 log sudo service dnsmasq force-reload
 
-log sudo find /var/log
+log sudo ifconfig -a
+log sudo ps -edf
+log sudo netstat -lnp
+
+log sudo find /var/log -type f
+log sudo cat /var/log/clearwater*.log |true
+log sudo cat /var/log/clearwater-cluster-manager/* |true
+log sudo cat /var/log/clearwater-config-manager/* |true
+log sudo cat /var/log/clearwater-etcd/* |true
+log sudo cat /var/log/clearwater-queue-manager/* |true
+log sudo cat /var/log/bono/* |true
 
 ctx logger info "[bono] Installation is done"
