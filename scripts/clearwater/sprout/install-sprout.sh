@@ -33,4 +33,6 @@ ctx logger info "[sprout] Use the DNS server"
 echo 'RESOLV_CONF=/etc/dnsmasq.resolv.conf' | sudo tee --append  /etc/default/dnsmasq
 log sudo service dnsmasq force-reload
 
+log sudo find /var/log
+
 ctx logger info "[sprout] Installation is done"

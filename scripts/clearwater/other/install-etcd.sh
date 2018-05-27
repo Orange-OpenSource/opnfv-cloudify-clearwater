@@ -32,4 +32,6 @@ log /usr/share/clearwater/clearwater-etcd/scripts/wait_for_etcd
 log sudo /usr/share/clearwater/clearwater-config-manager/scripts/upload_shared_config
 # sudo /usr/share/clearwater/clearwater-config-manager/scripts/apply_shared_config
 
+log sudo find /var/log
+
 ctx logger info "[etcd] Installation is done"
