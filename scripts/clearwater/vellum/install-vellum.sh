@@ -55,4 +55,7 @@ ctx logger info "[vellum] Use the DNS server"
 echo 'RESOLV_CONF=/etc/dnsmasq.resolv.conf' | sudo tee --append  /etc/default/dnsmasq
 log sudo service dnsmasq force-reload
 
+log sudo find /var/log
+log sudo cat /var/log/cassandra/system.log |true
+
 ctx logger info "[vellum] Installation is done"

@@ -32,3 +32,7 @@ ctx logger info "[ellis] The installation packages is done correctly"
 ctx logger info "[ellis] Configure a new DNS server"
 echo 'RESOLV_CONF=/etc/dnsmasq.resolv.conf' | sudo tee --append  /etc/default/dnsmasq
 log sudo service dnsmasq force-reload
+
+log sudo find /var/log
+
+ctx logger info "[ellis] Installation is done"
