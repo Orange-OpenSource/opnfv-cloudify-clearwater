@@ -29,8 +29,6 @@ log sudo DEBIAN_FRONTEND=noninteractive apt-get install clearwater-management --
 ctx logger info "[etcd] The software is installed"
 
 log /usr/share/clearwater/clearwater-etcd/scripts/wait_for_etcd
-log sudo /usr/share/clearwater/clearwater-config-manager/scripts/upload_shared_config
-# sudo /usr/share/clearwater/clearwater-config-manager/scripts/apply_shared_config
 
 log sudo ifconfig -a
 log sudo ps -edf
