@@ -30,3 +30,5 @@ signup_key={{secret_code}}
 turn_workaround={{secret_code}}
 ellis_api_key={{secret_code}}
 ellis_cookie_key={{secret_code}}
+
+homestead_impu_store=vellum.{{private_domain}}
