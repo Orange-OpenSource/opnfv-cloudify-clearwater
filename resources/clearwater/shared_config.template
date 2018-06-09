@@ -9,7 +9,7 @@ sprout_registration_store=vellum.{{private_domain}}
 cassandra_hostname=vellum.{{private_domain}}
 chronos_hostname=vellum.{{private_domain}}
 ralf_session_store=vellum.{{private_domain}}
-ralf_hostname=ralf.{{private_domain}}:10888
+ralf_hostname=dime.{{private_domain}}:10888
 xdms_hostname=homer.{{private_domain}}:7888
 signaling_dns_server={{host_ip}}
 
