@@ -13,7 +13,7 @@ sudo mkdir -p /etc/chronos
 
 echo '
 [http]
-bind-address = $(hostname -I)
+bind-address = 0.0.0.0
 bind-port = 7253
 threads = 50
 
