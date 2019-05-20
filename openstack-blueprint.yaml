@@ -633,3 +633,5 @@ outputs:
     value: { get_attribute: [bind_floatingip, floating_ip_address] }
   ellis_ip:
     value: { get_attribute: [ellis_floatingip, floating_ip_address] }
+  bono_ip:
+    value: { get_attribute: [bono_floatingip, floating_ip_address] }
