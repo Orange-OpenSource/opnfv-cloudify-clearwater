@@ -15,6 +15,7 @@ ctx logger info "[etcd] Configure the APT software source"
 if [ ! -f /etc/apt/sources.list.d/clearwater.list ]
   then
     echo 'deb http://artifacts.opnfv.org/functest/clearwater/debian ./' | sudo tee --append /etc/apt/sources.list.d/clearwater.list
+    echo 'deb http://artifacts.opnfv.org/functest/clearwater2/debian ./' | sudo tee --append /etc/apt/sources.list.d/clearwater.list
 fi
 log sudo apt-get update
 
