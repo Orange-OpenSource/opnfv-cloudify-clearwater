@@ -13,7 +13,7 @@ Before starting, requierements:
 
 Download cloudify-manager image:
 ```
-wget http://repository.cloudifysource.org/cloudify/4.0.1/sp-release/cloudify-manager-premium-4.0.1.qcow2
+wget http://repository.cloudifysource.org/cloudify/4.0.1/sp-release/cloudify-manager-community-19.01.24.qcow2
 ```
 Upload this image on your OpenStack platform
 
