@@ -28,7 +28,8 @@ git clone -b master https://github.com/Orange-OpenSource/opnfv-cloudify-clearwat
 Upload **blueprint** on the orchestrator :
 ```
 cd opnfv-cloudify-clearwater
-cfy blueprints upload -b clearwater -p openstack-blueprint.yaml
+# cfy blueprints upload -b clearwater -p openstack-blueprint.yaml
+cfy blueprints upload -b clearwater openstack-blueprint.yaml
 ```
 
 ### Create and launch deployment
@@ -60,12 +61,14 @@ Bellow an example of input.yaml file configurations:
 
 Once the completed input file, we must **create** the deployment on orchestrator :
 ```
-cfy deployments create -b clearwater -d clearwater-test --inputs inputs/inputs.yaml
+# cfy deployments create -b clearwater -d clearwater-test --inputs inputs/inputs.yaml
+cfy deployments create -b clearwater clearwater-test --inputs inputs/inputs.yaml
 ```
 
 Then, you have to **launch** clearwater deployment :
 ```
-cfy executions start -w install -d clearwater-test
+# cfy executions start -w install -d clearwater-test
+cfy executions start install -d  clearwater-test
 ```
 
 During the deployment many **logs** appears on console :
@@ -125,7 +128,8 @@ Before **scale** your deployment, create input file with this parameters :
 vi scale.yaml
 ```
 ```
-node_id: sprout
+# node_id: sprout
+scalable_entity_name: sprout
 delta: 1 
 scale_compute: true
 ```
